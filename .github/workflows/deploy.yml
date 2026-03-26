@@ -139,24 +139,51 @@ jobs:
           set -euo pipefail
           BASE="https://svorazbor.ru"
 
+          # -4: ложные 404 при битой AAAA; -L: итоговый код после редиректов (https/www)
+          http_code() {
+            curl -4 -sS -L --max-redirs 10 -o /dev/null -w "%{http_code}" \
+              --connect-timeout 15 --max-time 30 \
+              -A "Mozilla/5.0 (compatible; SVO-deploy-smoke/1.0; +https://svorazbor.ru)" \
+              "$1" || echo "000"
+          }
+
           wait_http_200() {
             local label="$1"
             local url="$2"
             local i code
             for i in $(seq 1 "${MAX_ATTEMPTS}"); do
-              code=$(curl -sS -o /dev/null -w "%{http_code}" \
-                --connect-timeout 15 --max-time 30 "$url" || echo "000")
+              code=$(http_code "$url")
               if [[ "$code" == "200" ]]; then
                 echo "OK: $label -> HTTP 200 (попытка $i/${MAX_ATTEMPTS})"
                 return 0
               fi
-              echo "Попытка $i/${MAX_ATTEMPTS}: $label -> HTTP $code, пауза ${SLEEP_SEC}s…"
+              echo "Попытка $i/${MAX_ATTEMPTS}: $label -> HTTP $code ($url), пауза ${SLEEP_SEC}s…"
               sleep "${SLEEP_SEC}"
             done
             echo "::error::$label: нет HTTP 200 после ${MAX_ATTEMPTS} попыток (url=$url)"
             return 1
           }
 
-          wait_http_200 "Главная" "${BASE}/"
+          wait_http_200_home() {
+            local i u code
+            local -a urls=("${BASE}/" "https://www.svorazbor.ru/")
+            for i in $(seq 1 "${MAX_ATTEMPTS}"); do
+              local parts=()
+              for u in "${urls[@]}"; do
+                code=$(http_code "$u")
+                parts+=("$u → $code")
+                if [[ "$code" == "200" ]]; then
+                  echo "OK: Главная -> HTTP 200 через $u (попытка $i/${MAX_ATTEMPTS})"
+                  return 0
+                fi
+              done
+              echo "Попытка $i/${MAX_ATTEMPTS}: Главная -> ${parts[*]}, пауза ${SLEEP_SEC}s…"
+              sleep "${SLEEP_SEC}"
+            done
+            echo "::error::Главная: нет HTTP 200 ни на ${BASE}/, ни на https://www.svorazbor.ru/ после ${MAX_ATTEMPTS} попыток"
+            return 1
+          }
+
+          wait_http_200_home
           wait_http_200 "Health" "${BASE}/api/health"
-          echo "Smoke: оба URL вернули 200."
+          echo "Smoke: главная (apex или www) и /api/health вернули 200."

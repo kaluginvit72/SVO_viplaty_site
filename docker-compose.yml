@@ -1,6 +1,3 @@
-# Production template for VPS. Copy this file + `.env` into VPS_APP_DIR (см. web/README.md — деплой Docker).
-# Image is built in GitHub Actions and pushed to GHCR. Set GHCR_IMAGE_OWNER in `.env` (lowercase GitHub username or org).
-
 services:
   app:
     image: ghcr.io/${GHCR_IMAGE_OWNER}/svo-site:latest
@@ -10,6 +7,16 @@ services:
     # 3001 на хосте: порт 3000 часто занят другим Node/старым контейнером
     ports:
       - "127.0.0.1:3001:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.svorazbor.rule=Host(`svorazbor.ru`)"
+      - "traefik.http.routers.svorazbor.entrypoints=websecure"
+      - "traefik.http.routers.svorazbor.tls=true"
+      - "traefik.http.routers.svorazbor.tls.certresolver=letsencrypt"
+      - "traefik.http.services.svorazbor.loadbalancer.server.port=3000"
+    networks:
+      - default
+      - dokploy-network
     volumes:
       - ./data:/app/data
     healthcheck:
@@ -24,3 +31,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 45s
+
+networks:
+  dokploy-network:
+    external: true
