@@ -436,7 +436,7 @@ sudo certbot --nginx -d svorazbor.ru -d www.svorazbor.ru
 ### Обновление после `git push`
 
 1. Workflow **Deploy (Docker → GHCR → VPS)** пушит **`latest`** и **`<github.sha>`** в **`ghcr.io/<owner>/svo-site`**.
-2. На VPS: **`docker compose pull`** → **`docker compose up -d`**.
+2. На VPS скрипт деплоя подтягивает актуальный **`docker-compose.yml`** с **raw.githubusercontent.com** (ветка **`main`** / текущая), затем **`docker compose pull`** и **`docker compose up -d`** — иначе на сервере оставался бы старый compose (например порт **3000**).
 3. Том **`./data`** сохраняется.
 
 ### Первый раз на VPS (обязательно до первого успешного Deploy)

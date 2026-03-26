@@ -118,6 +118,9 @@ jobs:
               exit 1
             fi
             cd "$APP_DIR"
+            # Иначе на VPS вечно старый compose (например порт 3000) — только pull образа его не обновляет
+            curl -fsSL -o docker-compose.yml \
+              "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/docker-compose.yml"
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             docker compose pull
             docker compose up -d --remove-orphans
