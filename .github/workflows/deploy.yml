@@ -49,12 +49,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # NEXT_PUBLIC_* вшиваются в бандл при build; только .env на VPS для них не подхватится.
+      # GitHub → Settings → Variables: NEXT_PUBLIC_SITE_URL, NEXT_PUBLIC_YM_ID, NEXT_PUBLIC_GA_ID
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: ./web
           file: ./web/Dockerfile
           push: true
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_GA_ID=${{ vars.NEXT_PUBLIC_GA_ID }}
+            NEXT_PUBLIC_YM_ID=${{ vars.NEXT_PUBLIC_YM_ID }}
           tags: |
             ${{ env.REGISTRY }}/${{ steps.ghcr.outputs.owner }}/svo-site:latest
             ${{ env.REGISTRY }}/${{ steps.ghcr.outputs.owner }}/svo-site:${{ github.sha }}

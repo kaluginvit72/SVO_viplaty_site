@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { Onest, PT_Serif } from "next/font/google";
+import { GoogleAnalyticsApp } from "@/components/analytics/google-analytics-app";
 import { YandexMetrika } from "@/components/analytics/yandex-metrika";
 import { siteMetadata } from "@/data/seo/site-metadata";
 import { resolveSiteUrl } from "@/lib/site-url";
@@ -91,7 +91,7 @@ export default function RootLayout({
       <body
         className={`${sans.variable} ${serif.variable} min-h-screen min-w-0 antialiased font-sans`}
       >
-        {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+        {gaId ? <GoogleAnalyticsApp gaId={gaId} /> : null}
         {ymId ? <YandexMetrika counterId={ymId} /> : null}
         <a
           href="#main-content"
