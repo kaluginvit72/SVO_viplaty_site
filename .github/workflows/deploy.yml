@@ -94,7 +94,14 @@ jobs:
               exit 1
             fi
             if [ ! -d "$APP_DIR" ]; then
-              echo "::error::На VPS нет каталога деплоя. Один раз по SSH: клон репозитория и sudo bash deploy/scripts/setup-var-www-svorazbor.sh — см. web/README.md. Ожидается путь вроде /var/www/svorazbor"
+              echo "=== Диагностика: каталог деплоя недоступен ==="
+              echo "Пользователь SSH: $(whoami) uid=$(id -u)"
+              parent="$(dirname "$APP_DIR")"
+              echo "ls родителя ($parent):"
+              ls -la "$parent" 2>&1 || true
+              echo "ls целевого пути:"
+              ls -la "$APP_DIR" 2>&1 || true
+              echo "::error::Нет каталога VPS_APP_DIR или нет прав x на путь. На VPS один раз: git clone + sudo bash deploy/scripts/setup-var-www-svorazbor.sh, затем sudo chown -R ВАШ_SSH_USER:ВАШ_SSH_USER /var/www/svorazbor (кроме data — см. README). Секрет VPS_APP_DIR = тот же абсолютный путь, без пробелов и без / в конце."
               exit 1
             fi
             cd "$APP_DIR"

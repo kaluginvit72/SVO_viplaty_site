@@ -432,12 +432,38 @@ sudo certbot --nginx -d svorazbor.ru -d www.svorazbor.ru
 2. На VPS: **`docker compose pull`** → **`docker compose up -d`**.
 3. Том **`./data`** сохраняется.
 
+### Первый раз на VPS (обязательно до первого успешного Deploy)
+
+Зайдите по SSH **тем же пользователем**, что в секрете **`VPS_USER`** (не обязательно `root`). Выполните:
+
+```bash
+sudo mkdir -p /var/www/svorazbor
+sudo chown -R "$USER:$USER" /var/www/svorazbor
+cd /tmp
+rm -rf SVO_viplaty_site
+git clone https://github.com/kaluginvit72/SVO_viplaty_site.git
+cd SVO_viplaty_site
+sudo bash deploy/scripts/setup-var-www-svorazbor.sh
+```
+
+Скрипт снова выставит владельца **`data/`** на **uid 1001** и положит **`docker-compose.yml`** / **`.env`**. Затем отредактируйте **`/var/www/svorazbor/.env`**.
+
+Проверка от **того же пользователя**, что в Actions:
+
+```bash
+test -d /var/www/svorazbor && ls -la /var/www/svorazbor
+```
+
+В GitHub → Secrets → **`VPS_APP_DIR`** должно быть ровно: **`/var/www/svorazbor`** (без кавычек, без пробелов, без `/` в конце).
+
+Если каталог создавали только под **`root`**, а Actions ходят под **`deploy`**, выдайте владельца: **`sudo chown -R deploy:deploy /var/www/svorazbor`**, затем снова **`sudo chown -R 1001:1001 /var/www/svorazbor/data`**.
+
 ### Если job «Deploy on VPS» в GitHub Actions падает
 
 | Симптом | Что сделать |
 |--------|-------------|
 | **`Unexpected input(s) 'script_stop'`** | В репозитории в **`.github/workflows/deploy.yml`** не должно быть **`script_stop`** (в **appleboy/ssh-action@v1.2.x** этого поля нет). Закоммитьте актуальный файл из репозитория и запушьте в **`main`**. |
-| **`cd: … No such file or directory`** | На VPS **ещё нет** каталога из секрета **`VPS_APP_DIR`**. Один раз по SSH: **`sudo bash deploy/scripts/setup-var-www-svorazbor.sh`** из клона репозитория, либо вручную **`mkdir -p /var/www/svorazbor`**, положите **`docker-compose.yml`** и **`.env`**. В секрете **`VPS_APP_DIR`** укажите **ровно** тот же путь, **без** пробелов в начале/конце и **без** завершающего **`/`** (например **`/var/www/svorazbor`**). |
+| **`Нет каталога VPS_APP_DIR или нет прав`** / **`cd: … No such file`** | Выполните раздел **«Первый раз на VPS»** выше по этой странице. Убедитесь, что **`VPS_USER`** может выполнить **`cd /var/www/svorazbor`**. |
 | **`missing server host`** | Не задан **`VPS_HOST`** (или другие обязательные секреты). |
 
 ### Проверка контейнера и логи
