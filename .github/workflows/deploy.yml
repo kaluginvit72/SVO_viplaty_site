@@ -125,3 +125,38 @@ jobs:
             docker compose pull
             docker compose up -d --remove-orphans
             docker image prune -f
+
+  smoke-production:
+    name: Smoke (svorazbor.ru)
+    runs-on: ubuntu-latest
+    needs: build-push-deploy
+    steps:
+      - name: Curl главная и /api/health (retry)
+        env:
+          MAX_ATTEMPTS: "20"
+          SLEEP_SEC: "5"
+        run: |
+          set -euo pipefail
+          BASE="https://svorazbor.ru"
+
+          wait_http_200() {
+            local label="$1"
+            local url="$2"
+            local i code
+            for i in $(seq 1 "${MAX_ATTEMPTS}"); do
+              code=$(curl -sS -o /dev/null -w "%{http_code}" \
+                --connect-timeout 15 --max-time 30 "$url" || echo "000")
+              if [[ "$code" == "200" ]]; then
+                echo "OK: $label -> HTTP 200 (попытка $i/${MAX_ATTEMPTS})"
+                return 0
+              fi
+              echo "Попытка $i/${MAX_ATTEMPTS}: $label -> HTTP $code, пауза ${SLEEP_SEC}s…"
+              sleep "${SLEEP_SEC}"
+            done
+            echo "::error::$label: нет HTTP 200 после ${MAX_ATTEMPTS} попыток (url=$url)"
+            return 1
+          }
+
+          wait_http_200 "Главная" "${BASE}/"
+          wait_http_200 "Health" "${BASE}/api/health"
+          echo "Smoke: оба URL вернули 200."
