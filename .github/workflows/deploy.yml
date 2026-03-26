@@ -61,6 +61,24 @@ jobs:
 
       # При ошибке pull (403) для приватного GHCR добавьте PAT с read:packages в секрет GHCR_READ_TOKEN
       # и замените строку login на: echo "${{ secrets.GHCR_READ_TOKEN }}" | docker login ghcr.io -u USER --password-stdin
+      - name: Verify VPS secrets
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_APP_DIR: ${{ secrets.VPS_APP_DIR }}
+        run: |
+          missing=
+          [ -z "$VPS_HOST" ] && missing="${missing} VPS_HOST"
+          [ -z "$VPS_USER" ] && missing="${missing} VPS_USER"
+          [ -z "$VPS_SSH_KEY" ] && missing="${missing} VPS_SSH_KEY"
+          [ -z "$VPS_APP_DIR" ] && missing="${missing} VPS_APP_DIR"
+          if [ -n "$missing" ]; then
+            echo "::error::В GitHub → Settings → Secrets → Actions задайте секреты (пустые сейчас):$missing"
+            exit 1
+          fi
+
+      # Не используйте script_stop — в appleboy/ssh-action@v1.2.x этого input нет (warning + игнор).
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.2.2
         with:
@@ -68,10 +86,18 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || '22' }}
-          script_stop: true
           script: |
             set -euo pipefail
-            cd "${{ secrets.VPS_APP_DIR }}"
+            APP_DIR=$(printf '%s' "${{ secrets.VPS_APP_DIR }}" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            if [ -z "$APP_DIR" ]; then
+              echo "::error::VPS_APP_DIR пустой в секретах GitHub"
+              exit 1
+            fi
+            if [ ! -d "$APP_DIR" ]; then
+              echo "::error::На VPS нет каталога деплоя. Один раз по SSH: клон репозитория и sudo bash deploy/scripts/setup-var-www-svorazbor.sh — см. web/README.md. Ожидается путь вроде /var/www/svorazbor"
+              exit 1
+            fi
+            cd "$APP_DIR"
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             docker compose pull
             docker compose up -d --remove-orphans

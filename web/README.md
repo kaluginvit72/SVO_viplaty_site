@@ -250,18 +250,35 @@ npm run test:e2e
 
 ### Что положить на VPS
 
+**Рекомендуемый путь на сервере:** **`/var/www/svorazbor`** (его же укажите в секрете **`VPS_APP_DIR`**).
+
+#### Автоматическая подготовка `/var/www/svorazbor`
+
+На VPS (Ubuntu/Debian), из **корня клона** этого репозитория:
+
+```bash
+git clone https://github.com/kaluginvit72/SVO_viplaty_site.git
+cd SVO_viplaty_site
+sudo bash deploy/scripts/setup-var-www-svorazbor.sh
+```
+
+Скрипт **[`deploy/scripts/setup-var-www-svorazbor.sh`](../deploy/scripts/setup-var-www-svorazbor.sh)**:
+
+- создаёт **`/var/www/svorazbor`** и **`data/`**;
+- копирует **`docker-compose.yml`**;
+- если **`.env`** ещё нет — копирует **`deploy/env.production.example`** → **`.env`** (`chmod 600`);
+- выставляет владельца **`data/`** на **uid 1001** (пользователь **`nextjs`** в контейнере);
+- владелец каталога и файлов compose — пользователь, от которого вы вызывали `sudo` (**`$SUDO_USER`**), чтобы тот же пользователь мог запускать **`docker compose`** и чтобы совпадал SSH-пользователь из GitHub Actions.
+
+После скрипта отредактируйте **`/var/www/svorazbor/.env`** (Telegram, при необходимости аналитика; **`GHCR_IMAGE_OWNER`** в шаблоне уже **`kaluginvit72`** — при другом аккаунте GitHub замените).
+
+#### Вручную (если без скрипта)
+
 В каталоге **`VPS_APP_DIR`**:
 
 1. **`docker-compose.yml`** из корня репозитория.
 2. **`.env`** из **`deploy/env.production.example`**, заполнить; `chmod 600 .env`.
-3. Каталог **`data/`**:
-
-   ```bash
-   sudo mkdir -p /var/www/svorazbor/data
-   sudo chown -R 1001:1001 /var/www/svorazbor/data
-   ```
-
-   Замените путь на свой **`VPS_APP_DIR`**.
+3. Каталог **`data/`** с **`chown -R 1001:1001`** на **`data/`** (см. пошаговый раздел ниже).
 
 ### Пошаговый деплой на VPS: контейнер и запуск
 
@@ -284,7 +301,9 @@ npm run test:e2e
 
 #### 2. Каталог на сервере и файлы
 
-На VPS (под пользователем с правами на каталог или через `sudo`):
+Проще всего — скрипт **`deploy/scripts/setup-var-www-svorazbor.sh`** (см. подраздел **«Автоматическая подготовка `/var/www/svorazbor`»** выше): запуск из клона репозитория на VPS под **`sudo bash …`**.
+
+Вручную:
 
 ```bash
 sudo mkdir -p /var/www/svorazbor/data
@@ -292,27 +311,9 @@ sudo chown -R "$USER:$USER" /var/www/svorazbor
 cd /var/www/svorazbor
 ```
 
-Скопируйте с локальной машины **из корня репозитория** файл **`docker-compose.yml`**:
+Скопируйте **`docker-compose.yml`** с ПК: `scp docker-compose.yml user@YOUR_VPS_IP:/var/www/svorazbor/`. Создайте **`.env`** из **`deploy/env.production.example`**, **`chmod 600 .env`**, затем **`sudo chown -R 1001:1001 /var/www/svorazbor/data`**.
 
-```bash
-# с вашего ПК (пример):
-scp docker-compose.yml user@YOUR_VPS_IP:/var/www/svorazbor/
-```
-
-Создайте **`.env`** на сервере (удобно скопировать шаблон из репозитория **`deploy/env.production.example`**, отредактировать на месте):
-
-```bash
-nano /var/www/svorazbor/.env
-chmod 600 /var/www/svorazbor/.env
-```
-
-Том для лидов должен принадлежать пользователю процесса в контейнере (**uid 1001**):
-
-```bash
-sudo chown -R 1001:1001 /var/www/svorazbor/data
-```
-
-В **`.env` обязательно** задайте **`GHCR_IMAGE_OWNER`** (логин GitHub **строчными буквами**, как в URL образа **`ghcr.io/<owner>/svo-site`**).
+В **`.env`** проверьте **`GHCR_IMAGE_OWNER`** (строчными буквами, как в **`ghcr.io/<owner>/svo-site`**).
 
 #### 3. Образ в GHCR: когда он появляется
 
@@ -430,6 +431,14 @@ sudo certbot --nginx -d svorazbor.ru -d www.svorazbor.ru
 1. Workflow **Deploy (Docker → GHCR → VPS)** пушит **`latest`** и **`<github.sha>`** в **`ghcr.io/<owner>/svo-site`**.
 2. На VPS: **`docker compose pull`** → **`docker compose up -d`**.
 3. Том **`./data`** сохраняется.
+
+### Если job «Deploy on VPS» в GitHub Actions падает
+
+| Симптом | Что сделать |
+|--------|-------------|
+| **`Unexpected input(s) 'script_stop'`** | В репозитории в **`.github/workflows/deploy.yml`** не должно быть **`script_stop`** (в **appleboy/ssh-action@v1.2.x** этого поля нет). Закоммитьте актуальный файл из репозитория и запушьте в **`main`**. |
+| **`cd: … No such file or directory`** | На VPS **ещё нет** каталога из секрета **`VPS_APP_DIR`**. Один раз по SSH: **`sudo bash deploy/scripts/setup-var-www-svorazbor.sh`** из клона репозитория, либо вручную **`mkdir -p /var/www/svorazbor`**, положите **`docker-compose.yml`** и **`.env`**. В секрете **`VPS_APP_DIR`** укажите **ровно** тот же путь, **без** пробелов в начале/конце и **без** завершающего **`/`** (например **`/var/www/svorazbor`**). |
+| **`missing server host`** | Не задан **`VPS_HOST`** (или другие обязательные секреты). |
 
 ### Проверка контейнера и логи
 
