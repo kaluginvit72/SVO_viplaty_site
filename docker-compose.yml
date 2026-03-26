@@ -7,8 +7,9 @@ services:
     container_name: svo-site
     restart: always
     env_file: .env
+    # 3001 на хосте: порт 3000 часто занят другим Node/старым контейнером
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3001:3000"
     volumes:
       - ./data:/app/data
     healthcheck:

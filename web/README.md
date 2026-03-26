@@ -25,7 +25,7 @@ npm run dev
 | **DNS** | **A** / **AAAA** для **`svorazbor.ru`** (и **www**, если используете) → IP VPS. |
 | **SSL** | **Certbot** (`certbot --nginx -d …`) или TLS на обратном прокси. |
 | **Индексация** | После выкладки открыть **`/robots.txt`**, **`/sitemap.xml`**, проверить превью ссылки (OG) и canonical в исходнике главной. |
-| **Smoke** | С сервера: `curl -sS http://127.0.0.1:3000/api/health` → OK; в браузере: квиз (fresh + clarify), отправка формы, **`/thanks`**. Локально/CI: **`npm run smoke`**. |
+| **Smoke** | С сервера (Docker): `curl -sS http://127.0.0.1:3001/api/health` → OK; в браузере: квиз (fresh + clarify), отправка формы, **`/thanks`**. Локально/CI: **`npm run smoke`**. |
 
 Дополнительно перед первым продом: **favicon** (`src/app/icon.svg` или замена по [доке Next.js](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/app-icons)), актуальность текстов **`/privacy`** и **`/consent`**.
 
@@ -200,7 +200,7 @@ npm run test:e2e
 
 **Целевой домен:** **`https://svorazbor.ru`**. DNS — у регистратора (A/AAAA на IP VPS; при необходимости отдельно **www**).
 
-**Цепочка:** push в **`main`** / **`master`** (см. `paths` в `.github/workflows/deploy.yml`) → GitHub Actions собирает образ → **GHCR** (`ghcr.io/<owner>/svo-site`) → SSH на VPS → `docker compose pull && up -d` → **Nginx** (прокси на `127.0.0.1:3000`) → **HTTPS**.
+**Цепочка:** push в **`main`** / **`master`** (см. `paths` в `.github/workflows/deploy.yml`) → GitHub Actions собирает образ → **GHCR** (`ghcr.io/<owner>/svo-site`) → SSH на VPS → `docker compose pull && up -d` → **Nginx** (прокси на `127.0.0.1:3001`) → **HTTPS**.
 
 **Файлы в репозитории:**
 
@@ -208,7 +208,7 @@ npm run test:e2e
 |------|------------|
 | `web/Dockerfile` | Multi-stage build, **standalone** Next.js |
 | `web/.dockerignore` | Исключения для контекста сборки |
-| `docker-compose.yml` | Сервис `app`, порт **127.0.0.1:3000**, том **`./data:/app/data`**, healthcheck **`/api/health`** |
+| `docker-compose.yml` | Сервис `app`, на хосте **127.0.0.1:3001** → контейнер **:3000**, том **`./data:/app/data`**, healthcheck **`/api/health`** |
 | `.github/workflows/deploy.yml` | Build → push GHCR → deploy на VPS |
 | `.github/workflows/ci.yml` | Lint, test, build на PR/push в `web/**` |
 | `.github/workflows/deploy-vps.yml` | Legacy: PM2 + rsync (только ручной запуск) |
@@ -359,14 +359,14 @@ docker compose up -d --remove-orphans
 ```bash
 docker compose ps
 docker compose logs -f --tail=100 app
-curl -sS http://127.0.0.1:3000/api/health
+curl -sS http://127.0.0.1:3001/api/health
 ```
 
-Ожидается ответ **HTTP 200** от **`/api/health`**. Сайт на порту **3000** слушает только **`127.0.0.1`** (не торчит наружу) — наружу отдаёт **Nginx**.
+Ожидается ответ **HTTP 200** от **`/api/health`**. На хосте приложение проброшено на **`127.0.0.1:3001`** (внутри контейнера — **3000**), наружу только **Nginx** (**80**/**443**).
 
 #### 6. Firewall (рекомендуется)
 
-Если включён **ufw**, откройте HTTP/HTTPS; порт **3000** снаружи не открывайте:
+Если включён **ufw**, откройте HTTP/HTTPS; порты **3001**/**3000** приложения снаружи не открывайте (достаточно Nginx):
 
 ```bash
 sudo ufw allow OpenSSH
@@ -377,7 +377,7 @@ sudo ufw status
 
 #### 7. Nginx и HTTPS
 
-Дальше — как в подразделах **[Nginx](#nginx)** и **[HTTPS (Certbot)](#https-certbot)** ниже: прокси на **`127.0.0.1:3000`**, затем Certbot.
+Дальше — как в подразделах **[Nginx](#nginx)** и **[HTTPS (Certbot)](#https-certbot)** ниже: прокси на **`127.0.0.1:3001`** (см. **`deploy/nginx/svorazbor.ru.conf`**), затем Certbot.
 
 #### 8. Обновление версии (после каждого успешного деплоя из GitHub)
 
@@ -471,6 +471,7 @@ test -d /var/www/svorazbor && ls -la /var/www/svorazbor
 |--------|-------------|
 | **`Unexpected input(s) 'script_stop'`** | В репозитории в **`.github/workflows/deploy.yml`** не должно быть **`script_stop`** (в **appleboy/ssh-action@v1.2.x** этого поля нет). Закоммитьте актуальный файл из репозитория и запушьте в **`main`**. |
 | **`Нет каталога VPS_APP_DIR или нет прав`** / **`cd: … No such file`** | Выполните раздел **«Первый раз на VPS»** выше по этой странице. Убедитесь, что **`VPS_USER`** может выполнить **`cd /var/www/svorazbor`**. |
+| **`Bind for 0.0.0.0:3000 failed: port is already allocated`** | На хосте занят **3000**. В **`docker-compose.yml`** приложение проброшено на **`127.0.0.1:3001`**, Nginx — на **3001** (шаблон **`deploy/nginx/svorazbor.ru.conf`**). Скопируйте актуальный **`docker-compose.yml`** на VPS или вручную замените строку портов на **`127.0.0.1:3001:3000`**, затем **`docker compose up -d`**. |
 | **`missing server host`** | Не задан **`VPS_HOST`** (или другие обязательные секреты). |
 
 ### Проверка контейнера и логи
@@ -479,7 +480,7 @@ test -d /var/www/svorazbor && ls -la /var/www/svorazbor
 cd /var/www/svorazbor   # ваш VPS_APP_DIR
 docker compose ps
 docker compose logs -f --tail=200 app
-curl -sS http://127.0.0.1:3000/api/health
+curl -sS http://127.0.0.1:3001/api/health
 ```
 
 ### Ручной откат образа
