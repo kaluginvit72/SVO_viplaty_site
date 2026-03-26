@@ -234,15 +234,22 @@ npm run test:e2e
 - [ ] В GitHub заполнены секреты Actions (таблица ниже).
 - [ ] На VPS в **`VPS_APP_DIR`**: `docker-compose.yml`, **`.env`**, каталог **`data/`** с владельцем **uid 1001** (пользователь **`nextjs`** в образе).
 
-### Секреты GitHub (Settings → Secrets and variables → Actions)
+### Секреты и переменные GitHub (Settings → Secrets and variables → Actions)
+
+**Секреты** (Sensitive):
 
 | Secret | Описание |
 |--------|----------|
 | `VPS_HOST` | IP или домен для SSH |
 | `VPS_USER` | Пользователь SSH |
 | `VPS_SSH_KEY` | Приватный ключ **ed25519** или RSA, полный PEM (`BEGIN` / `END`) |
-| `VPS_APP_DIR` | Абсолютный путь на сервере (`docker-compose.yml` + `.env`), например `/var/www/svorazbor` |
 | `VPS_PORT` | Опционально; SSH-порт, по умолчанию **22** |
+
+**Переменные** (Repository variables, вкладка **Variables**):
+
+| Variable | Описание |
+|----------|----------|
+| **`VPS_APP_DIR`** | Абсолютный путь на сервере, например **`/var/www/svorazbor`**. Так путь **не маскируется** в логах Actions как `***`, проще отлаживать. Если Variable не задана, workflow берёт **Secret** с тем же именем **`VPS_APP_DIR`**. |
 
 Образ в GHCR публикуется через **`GITHUB_TOKEN`** (`packages: write`). На VPS: `docker login ghcr.io` с тем же токеном. При **403** на `docker pull` (приватный пакет) — PAT с **`read:packages`** в секрет **`GHCR_READ_TOKEN`** и правка логина в **`deploy.yml`** (комментарий в workflow).
 
@@ -250,7 +257,7 @@ npm run test:e2e
 
 ### Что положить на VPS
 
-**Рекомендуемый путь на сервере:** **`/var/www/svorazbor`** (его же укажите в секрете **`VPS_APP_DIR`**).
+**Рекомендуемый путь на сервере:** **`/var/www/svorazbor`** (его же задайте в **Variable** **`VPS_APP_DIR`** в GitHub).
 
 #### Автоматическая подготовка `/var/www/svorazbor`
 
@@ -454,7 +461,7 @@ sudo bash deploy/scripts/setup-var-www-svorazbor.sh
 test -d /var/www/svorazbor && ls -la /var/www/svorazbor
 ```
 
-В GitHub → Secrets → **`VPS_APP_DIR`** должно быть ровно: **`/var/www/svorazbor`** (без кавычек, без пробелов, без `/` в конце).
+В GitHub → **Variables** → **`VPS_APP_DIR`** = **`/var/www/svorazbor`** (без кавычек, без пробелов, без `/` в конце). Либо тот же текст в Secret — но в логах путь будет скрыт.
 
 Если каталог создавали только под **`root`**, а Actions ходят под **`deploy`**, выдайте владельца: **`sudo chown -R deploy:deploy /var/www/svorazbor`**, затем снова **`sudo chown -R 1001:1001 /var/www/svorazbor/data`**.
 
