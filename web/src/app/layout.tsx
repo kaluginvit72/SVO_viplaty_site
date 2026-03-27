@@ -3,6 +3,7 @@ import { Onest, PT_Serif } from "next/font/google";
 import { GoogleAnalyticsApp } from "@/components/analytics/google-analytics-app";
 import { YandexMetrika } from "@/components/analytics/yandex-metrika";
 import { siteMetadata } from "@/data/seo/site-metadata";
+import { runtimeGaMeasurementId, runtimeYmCounterId } from "@/lib/runtime-analytics-env";
 import { resolveSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -20,8 +21,6 @@ const serif = PT_Serif({
 });
 
 const siteUrlRaw = resolveSiteUrl();
-const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim() || "";
-const ymId = process.env.NEXT_PUBLIC_YM_ID?.trim() || "";
 
 const { defaultTitle, defaultDescription, applicationName, titleTemplateSuffix, openGraphSiteName } =
   siteMetadata;
@@ -86,11 +85,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const ymId = runtimeYmCounterId();
+  const gaId = runtimeGaMeasurementId();
+
   return (
     <html lang="ru">
       <body
         className={`${sans.variable} ${serif.variable} min-h-screen min-w-0 antialiased font-sans`}
       >
+        {ymId ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.__SVO_YM_ID=${JSON.stringify(ymId)};`,
+            }}
+          />
+        ) : null}
         {gaId ? <GoogleAnalyticsApp gaId={gaId} /> : null}
         {ymId ? <YandexMetrika counterId={ymId} /> : null}
         <a

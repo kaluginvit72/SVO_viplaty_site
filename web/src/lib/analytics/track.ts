@@ -1,11 +1,18 @@
 import { ANALYTICS_EVENTS, type AnalyticsEventName } from "@/lib/analytics/events";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID?.trim() || "";
-const YM_ID_RAW = process.env.NEXT_PUBLIC_YM_ID?.trim() || "";
+
+function ymIdFromWindow(): string {
+  if (typeof window === "undefined") return "";
+  const id = (window as Window & { __SVO_YM_ID?: string }).__SVO_YM_ID;
+  return typeof id === "string" ? id.trim() : "";
+}
 
 function ymCounterId(): number | null {
-  if (!YM_ID_RAW) return null;
-  const n = Number(YM_ID_RAW.replace(/\D/g, ""));
+  const raw =
+    ymIdFromWindow() || process.env.NEXT_PUBLIC_YM_ID?.trim().replace(/\r/g, "") || "";
+  if (!raw) return null;
+  const n = Number(raw.replace(/\D/g, ""));
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
