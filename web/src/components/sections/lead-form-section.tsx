@@ -9,6 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Loader2, Lock, MessageCircleHeart, ShieldCheck } from "lucide-react";
 import { useQuiz } from "@/contexts/quiz-context";
 import { useUtmParams } from "@/hooks/use-utm";
+import { legalDownloadHref } from "@/data/legal-documents";
 import { leadForm, footerDisclaimer } from "@/data/texts/landing";
 import { trackEvent } from "@/lib/analytics/track";
 import { leadFormSchema, type LeadFormValues } from "@/lib/validation/lead";
@@ -37,6 +38,7 @@ export function LeadFormSection() {
     defaultValues: {
       name: "",
       phone: "",
+      email: "",
       messenger: "",
       region: state.answers.region ?? "",
       situation: "",
@@ -77,6 +79,7 @@ export function LeadFormSection() {
     const body = {
       name: values.name,
       phone: values.phone,
+      email: values.email,
       messenger: values.messenger,
       region: values.region,
       situation: values.situation,
@@ -110,6 +113,7 @@ export function LeadFormSection() {
       success?: boolean;
       saved?: boolean;
       telegramSent?: boolean;
+      webhookSent?: boolean;
       message?: string;
       fieldErrors?: Partial<Record<keyof LeadFormValues | string, string[]>> & {
         quiz?: unknown;
@@ -130,6 +134,7 @@ export function LeadFormSection() {
         const map: (keyof LeadFormValues)[] = [
           "name",
           "phone",
+          "email",
           "messenger",
           "region",
           "situation",
@@ -145,6 +150,7 @@ export function LeadFormSection() {
         const skipQuiz = new Set<string>([
           "name",
           "phone",
+          "email",
           "messenger",
           "region",
           "situation",
@@ -172,6 +178,7 @@ export function LeadFormSection() {
 
     trackEvent("lead_form_success", {
       telegram_sent: data.telegramSent === true,
+      webhook_sent: data.webhookSent === true,
     });
     resetQuiz();
     router.push("/thanks");
@@ -279,6 +286,29 @@ export function LeadFormSection() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="lead-email" className="text-sm font-medium">
+                    {leadForm.emailLabel}{" "}
+                    <span className="font-normal text-muted-foreground">
+                      — {leadForm.emailOptional}
+                    </span>
+                  </Label>
+                  <Input
+                    id="lead-email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder={leadForm.emailPlaceholder}
+                    {...register("email")}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? "lead-email-err" : undefined}
+                  />
+                  {errors.email ? (
+                    <p id="lead-email-err" className="text-xs text-destructive">
+                      {errors.email.message}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="lead-messenger" className="text-sm font-medium">
                     {leadForm.messengerLabel}{" "}
                     <span className="font-normal text-muted-foreground">
@@ -351,20 +381,38 @@ export function LeadFormSection() {
                           {leadForm.consentDocsIntro}
                         </span>
                       </label>
-                      <p className="text-sm">
-                        <Link
-                          href="/privacy"
-                          className="font-medium text-[var(--deep-blue)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_35%,transparent)] focus-visible:ring-offset-2 rounded-sm"
-                        >
-                          {leadForm.privacyLink}
-                        </Link>
-                        <span className="mx-1.5 text-[var(--text-secondary)]">·</span>
-                        <Link
-                          href="/consent"
-                          className="font-medium text-[var(--deep-blue)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_35%,transparent)] focus-visible:ring-offset-2 rounded-sm"
-                        >
-                          {leadForm.consentLink}
-                        </Link>
+                      <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+                        <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
+                          <Link
+                            href="/privacy"
+                            className="font-medium text-[var(--deep-blue)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_35%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                          >
+                            {leadForm.privacyLink}
+                          </Link>
+                          <a
+                            href={legalDownloadHref.privacy}
+                            download
+                            className="text-xs font-medium text-muted-foreground underline-offset-4 hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_35%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                          >
+                            {leadForm.legalDownloadShort}
+                          </a>
+                        </span>
+                        <span className="text-[var(--text-secondary)]">·</span>
+                        <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
+                          <Link
+                            href="/consent"
+                            className="font-medium text-[var(--deep-blue)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_35%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                          >
+                            {leadForm.consentLink}
+                          </Link>
+                          <a
+                            href={legalDownloadHref.consent}
+                            download
+                            className="text-xs font-medium text-muted-foreground underline-offset-4 hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_35%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                          >
+                            {leadForm.legalDownloadShort}
+                          </a>
+                        </span>
                       </p>
                     </div>
                   </div>

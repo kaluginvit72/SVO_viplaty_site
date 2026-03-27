@@ -22,6 +22,7 @@ test.describe("Форма лида и /thanks", () => {
 
     await page.locator("#lead-name").fill("Тест E2E");
     await page.locator("#lead-phone").fill("+79001234567");
+    await page.locator("#lead-email").fill("e2e-test@example.com");
     await page.locator("#lead-region").fill("Москва");
     await page.locator("#lead-consent").click();
 

@@ -22,6 +22,7 @@ npm run dev
 | **Env** | На сервере: **`NEXT_PUBLIC_SITE_URL=https://svorazbor.ru`**, **`NODE_ENV=production`**, **`PORT=3000`**, **`LEADS_*`**, при Docker — **`GHCR_IMAGE_OWNER`**. См. **`web/.env.example`** и **`deploy/env.production.example`**. |
 | **Аналитика** | Заполнить **`NEXT_PUBLIC_GA_ID`** / **`NEXT_PUBLIC_YM_ID`**; в интерфейсах завести цели по именам из **`src/lib/analytics/events.ts`**. |
 | **Telegram** | **`TELEGRAM_BOT_TOKEN`**, **`TELEGRAM_CHAT_ID`**; без них лиды всё равно пишутся в файл (**`telegramSent: false`**). |
+| **Вебхук** | **`LEAD_WEBHOOK_URL`** — POST JSON `{ event: "lead.created", lead }` после сохранения лида; опционально **`LEAD_WEBHOOK_SECRET`** → `Authorization: Bearer …`. Без URL — **`webhookSent: false`**, заявка всё равно сохраняется. |
 | **DNS** | **A** / **AAAA** для **`svorazbor.ru`** (и **www**, если используете) → IP VPS. |
 | **SSL** | **Certbot** (`certbot --nginx -d …`) или TLS на обратном прокси. |
 | **Индексация** | После выкладки открыть **`/robots.txt`**, **`/sitemap.xml`**, проверить превью ссылки (OG) и canonical в исходнике главной. |
@@ -161,10 +162,10 @@ npm run test:e2e
 7. Ответ клиенту (при успешном сохранении):
 
    ```json
-   { "ok": true, "success": true, "saved": true, "telegramSent": true, "id": "…" }
+   { "ok": true, "success": true, "saved": true, "telegramSent": true, "webhookSent": true, "id": "…" }
    ```
 
-   Если Telegram недоступен или не настроен: **`saved: true`**, **`telegramSent: false`**, HTTP **200** — заявка не теряется.
+   Если Telegram или вебхук недоступны или не настроены: **`saved: true`**, **`telegramSent` / `webhookSent`** могут быть **`false`**, HTTP **200** — заявка не теряется.
 
 ### Переменные окружения
 

@@ -62,6 +62,9 @@ export const leadForm = {
   namePlaceholder: "Имя",
   phoneLabel: "Телефон",
   phonePlaceholder: "+7 …",
+  emailLabel: "Email",
+  emailOptional: "по желанию",
+  emailPlaceholder: "name@example.com",
   messengerLabel: "Telegram или WhatsApp",
   messengerOptional: "по желанию",
   messengerPlaceholder: "@username или номер",
@@ -76,6 +79,10 @@ export const leadForm = {
   consentDocsIntro: "Подробности — в документах:",
   privacyLink: "Политика конфиденциальности",
   consentLink: "Текст согласия",
+  /** Короткая подпись рядом с политикой / согласием (скачивание .docx) */
+  legalDownloadShort: "скачать",
+  /** Ссылка внизу страниц /privacy и /consent */
+  legalPageDownloadCta: "Скачать документ",
   submitErrorGeneric:
     "Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь другим способом.",
 } as const;

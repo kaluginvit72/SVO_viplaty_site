@@ -30,6 +30,8 @@ export interface StoredLeadRecord {
   /** Как ввёл пользователь (после trim) */
   phoneRaw: string | null;
   messenger: string | null;
+  /** Email из формы; опционально; в старых записях может отсутствовать */
+  email?: string | null;
   comment: string | null;
   consentAccepted: boolean;
   utm_source: string | null;

@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { legalDocuments, legalDownloadHref } from "@/data/legal-documents";
+import { leadForm } from "@/data/texts/landing";
 import { privacyPageDescription, siteMetadata } from "@/data/seo/site-metadata";
 
 const pageTitle = "Политика конфиденциальности";
+const { h1, paragraphs } = legalDocuments.privacy;
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -34,26 +37,22 @@ export default function PrivacyPage() {
         ← На главную
       </Link>
       <h1 className="mt-8 font-serif text-3xl font-semibold text-foreground">
-        Политика обработки персональных данных
+        {h1}
       </h1>
       <div className="prose prose-neutral mt-8 max-w-none space-y-4 text-sm leading-relaxed text-muted-foreground">
-        <p>
-          Настоящий документ описывает общие принципы обработки персональных
-          данных при использовании сайта и отправке заявки. Замените этот текст
-          на утверждённую юристом политику: цели обработки, категории данных,
-          сроки хранения, права субъекта, контакты оператора и порядок отзыва
-          согласия.
-        </p>
-        <p>
-          Оператор: укажите ИП/организацию, ИНН, ОГРН/ОГРНИП, адрес и email для
-          обращений по вопросам ПДн.
-        </p>
-        <p>
-          Данные из формы (имя, телефон, мессенджер, регион, описание ситуации)
-          используются для связи с вами и предварительного анализа обращения, если
-          вы дали согласие.
-        </p>
+        {paragraphs.map((text, i) => (
+          <p key={i}>{text}</p>
+        ))}
       </div>
+      <p className="mt-10 text-sm">
+        <a
+          href={legalDownloadHref.privacy}
+          download
+          className="font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+        >
+          {leadForm.legalPageDownloadCta}
+        </a>
+      </p>
     </div>
   );
 }

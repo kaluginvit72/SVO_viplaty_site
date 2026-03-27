@@ -25,6 +25,22 @@ export const leadFormSchema = z.object({
     .max(120)
     .optional()
     .transform((v) => (v === "" ? undefined : v)),
+  email: z
+    .string()
+    .trim()
+    .max(254, "Слишком длинный email")
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? undefined : v))
+    .superRefine((val, ctx) => {
+      if (val === undefined) return;
+      const r = z.string().email().safeParse(val);
+      if (!r.success) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Укажите корректный email",
+        });
+      }
+    }),
   region: z
     .string()
     .trim()

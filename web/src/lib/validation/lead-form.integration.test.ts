@@ -53,6 +53,39 @@ describe("leadFormSchema", () => {
     });
     expect(r.success).toBe(true);
   });
+
+  it("отклоняет неверный email", () => {
+    const r = leadFormSchema.safeParse({
+      name: "Иван",
+      phone: "+79001234567",
+      email: "не-email",
+      region: "Москва",
+      consent: true,
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("принимает пустой и корректный email", () => {
+    const empty = leadFormSchema.safeParse({
+      name: "Иван",
+      phone: "+79001234567",
+      email: "",
+      region: "Москва",
+      consent: true,
+    });
+    expect(empty.success).toBe(true);
+    if (empty.success) expect(empty.data.email).toBeUndefined();
+
+    const ok = leadFormSchema.safeParse({
+      name: "Иван",
+      phone: "+79001234567",
+      email: "test@example.com",
+      region: "Москва",
+      consent: true,
+    });
+    expect(ok.success).toBe(true);
+    if (ok.success) expect(ok.data.email).toBe("test@example.com");
+  });
 });
 
 describe("leadApiSchema (integration)", () => {

@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
-import { footerDisclaimer, footerLegalNote } from "@/data/texts/landing";
+import { legalDownloadHref } from "@/data/legal-documents";
+import {
+  footerDisclaimer,
+  footerLegalNote,
+  leadForm,
+} from "@/data/texts/landing";
 
 export function FooterSection() {
   return (
@@ -41,21 +46,35 @@ export function FooterSection() {
               Документы
             </p>
             <ul className="mt-4 space-y-2">
-              <li>
+              <li className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <Link
                   href="/privacy"
                   className="text-[var(--text-primary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
                 >
                   Политика конфиденциальности
                 </Link>
+                <a
+                  href={legalDownloadHref.privacy}
+                  download
+                  className="text-xs text-[var(--text-secondary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                >
+                  {leadForm.legalDownloadShort}
+                </a>
               </li>
-              <li>
+              <li className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <Link
                   href="/consent"
                   className="text-[var(--text-primary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
                 >
                   Согласие на обработку данных
                 </Link>
+                <a
+                  href={legalDownloadHref.consent}
+                  download
+                  className="text-xs text-[var(--text-secondary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                >
+                  {leadForm.legalDownloadShort}
+                </a>
               </li>
             </ul>
           </div>

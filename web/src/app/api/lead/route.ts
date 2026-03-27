@@ -3,6 +3,7 @@ import { buildStoredLeadRecord } from "@/lib/leads/build-stored-lead";
 import { getLeadsStorage } from "@/lib/leads/storage/factory";
 import { normalizeRuPhone } from "@/lib/phone/normalize-ru-phone";
 import { sendLeadTelegramNotification } from "@/lib/telegram/send-lead-notification";
+import { sendLeadWebhook } from "@/lib/webhook/send-lead-webhook";
 import { leadApiSchema } from "@/lib/validation/lead";
 
 export const runtime = "nodejs";
@@ -57,8 +58,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const tg = await sendLeadTelegramNotification(lead);
+  const [tg, wh] = await Promise.all([
+    sendLeadTelegramNotification(lead),
+    sendLeadWebhook(lead),
+  ]);
   const telegramSent = tg.ok === true;
+  const webhookSent = wh.ok === true;
 
   if (telegramSent) {
     try {
@@ -74,6 +79,7 @@ export async function POST(request: Request) {
     success: true,
     saved: true,
     telegramSent,
+    webhookSent,
     id: lead.id,
   });
 }

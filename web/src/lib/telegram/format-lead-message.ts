@@ -84,6 +84,7 @@ export function formatTelegramLeadMessageHtml(lead: StoredLeadRecord): string {
     lines.push(`<b>Как ввели в форме:</b> ${escapeHtml(lead.phoneRaw)}`);
   }
   lines.push(`<b>Мессенджер:</b> ${escapeHtml(orDash(lead.messenger))}`);
+  lines.push(`<b>Email:</b> ${escapeHtml(orDash(lead.email))}`);
 
   lines.push("");
   lines.push("💬 <b>Комментарий</b>");
