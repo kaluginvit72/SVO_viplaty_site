@@ -7,16 +7,24 @@ describe("preserveClarifyAnswersForFreshFlow", () => {
   it("переносит только clarify и stuckMonthsWaiting, сбрасывает остальное", () => {
     const before: QuizAnswers = {
       deceasedRole: "mobilized",
+      clarifyStage1: "already_filed",
       clarifyFilingStatus: "full_waiting",
       clarifyDeathCert: "yes",
+      clarifyPostFilingFeedback: "just_waiting",
+      clarifyGoalPrimary: "after_filing",
+      clarifyGoalSecondary: "find_blocker",
       clarifyConsequenceFocus: "timelines_stages",
       stuckMonthsWaiting: 6,
       region: "Старый регион",
     };
     const kept = preserveClarifyAnswersForFreshFlow(before);
     expect(kept).toEqual({
+      clarifyStage1: "already_filed",
       clarifyDeathCert: "yes",
       clarifyFilingStatus: "full_waiting",
+      clarifyPostFilingFeedback: "just_waiting",
+      clarifyGoalPrimary: "after_filing",
+      clarifyGoalSecondary: "find_blocker",
       clarifyConsequenceFocus: "timelines_stages",
       stuckMonthsWaiting: 6,
     });

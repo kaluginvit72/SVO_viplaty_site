@@ -8,50 +8,57 @@ import type { QuizAnswers } from "@/types/quiz";
  * Дополняет точечные тесты validate-quiz-step (сквозные сценарии).
  */
 describe("quiz flow scenarios (сквозная валидация)", () => {
-  it("fresh: только я, без complex", () => {
+  it("fresh: полный снимок (стандартная ветка)", () => {
     const a: QuizAnswers = {
-      deceasedRole: "mobilized",
-      relation: "spouse",
-      recipients: "only_me",
-      documents: ["death_cert"],
+      serviceStatus: "contract_mobilized",
+      freshApplicantRole: "spouse_registered",
+      freshRecipientsCount: "1",
+      freshChildrenCount: "0",
+      deathBasis: "duty",
+      ambiguityFlag: "no",
       region: "Московская область",
+      calcMode: "federal_only",
     };
     const steps = getVisibleSteps("fresh", a);
+    expect(steps).toHaveLength(8);
     for (const id of steps) {
       expect(validateQuizStep(id, a), `step ${id}`).toBeNull();
     }
   });
 
-  it("fresh: complex + recipients_count", () => {
+  it("fresh: спорная ветка + 5+ получателей + дети", () => {
     const a: QuizAnswers = {
-      deceasedRole: "contract",
-      relation: "complex",
-      relationComplexSub: "cohabitation_no_marriage",
-      recipients: "me_plus_4_or_more",
-      recipientsExact: "5",
-      documents: ["death_cert", "unit_notice"],
+      serviceStatus: "contract_mobilized",
+      freshApplicantRole: "cohabitation_no_marriage",
+      freshRecipientsCount: "5_plus",
+      freshChildrenCount: "3_plus",
+      deathBasis: "unknown",
+      ambiguityFlag: "yes",
       region: "Санкт-Петербург",
+      calcMode: "federal_plus_region",
     };
     const steps = getVisibleSteps("fresh", a);
-    expect(steps).toContain("relation_complex");
-    expect(steps).toContain("recipients_count");
+    expect(steps).toHaveLength(8);
     for (const id of steps) {
       expect(validateQuizStep(id, a), `step ${id}`).toBeNull();
     }
   });
 
-  it("clarify: все поля заполнены", () => {
+  it("clarify: все поля заполнены (новый квиз, с подачей)", () => {
     const a: QuizAnswers = {
+      clarifyStage1: "already_filed",
       clarifyDeathCert: "yes",
       clarifyMilitaryNotice: "requested_waiting",
       clarifyKinshipDocs: "partial",
       clarifyCopiesStatus: "collecting",
       clarifyFilingStatus: "full_waiting",
       clarifyWhereSubmitted: "sfr_mfc",
-      clarifyConsequenceFocus: "timelines_stages",
+      clarifyPostFilingFeedback: "just_waiting",
+      clarifyGoalPrimary: "missing_docs",
+      clarifyGoalSecondary: "check_package",
     };
     const steps = getVisibleSteps("clarify", a);
-    expect(steps).toHaveLength(7);
+    expect(steps).toHaveLength(10);
     for (const id of steps) {
       expect(validateQuizStep(id, a), `step ${id}`).toBeNull();
     }

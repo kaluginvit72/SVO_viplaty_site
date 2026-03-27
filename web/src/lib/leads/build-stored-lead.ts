@@ -1,10 +1,17 @@
-import { AMOUNTS, getRecipientsCount } from "@/lib/calculator";
+import { getRecipientsCount } from "@/lib/calculator";
+import {
+  computeFreshPayoutCalculation,
+  isFreshQuizComplete,
+  type FreshConsultantPayloadFields,
+} from "@/lib/calculator/fresh-payout-calculator";
 import { federalTotalForHeadline } from "@/lib/calculator/payout-view";
+import { buildClarifyInsightPayload } from "@/lib/quiz/clarify-insight";
 import {
   resolveApplicantRole,
   resolveClarifyDocumentsSummary,
   resolveComplexStatus,
   resolveDocumentsOnHand,
+  resolveFreshQuizSummary,
   resolveProblemType,
   resolveStatusOfDeceased,
   resolveSubmittedTo,
@@ -45,6 +52,7 @@ export function buildStoredLeadRecord(
 
   if (flowMode === "clarify") {
     const docSummary = resolveClarifyDocumentsSummary(answers);
+    const clarifyInsight = buildClarifyInsightPayload(answers);
     return {
       id: newLeadId(),
       createdAt: new Date().toISOString(),
@@ -55,6 +63,8 @@ export function buildStoredLeadRecord(
       complexStatus: null,
       recipientsCount: null,
       documentsOnHand: docSummary,
+      clarifyInsight: clarifyInsight ?? null,
+      freshConsultantPayload: null,
       problemType: null,
       submittedTo: null,
       monthsWaiting: null,
@@ -77,9 +87,23 @@ export function buildStoredLeadRecord(
     };
   }
 
-  const recipientsCount = getRecipientsCount(answers);
-  const federalTotal = federalTotalForHeadline();
-  const personalShare = federalTotal / recipientsCount;
+  const recipientsCountBase = getRecipientsCount(answers);
+  let recipientsCount = recipientsCountBase;
+  let federalTotal = federalTotalForHeadline();
+  let personalShare = federalTotal / recipientsCountBase;
+  let documentsSummary = resolveDocumentsOnHand(answers);
+  let freshConsultantPayload: FreshConsultantPayloadFields | null = null;
+
+  if (isFreshQuizComplete(answers)) {
+    const calc = computeFreshPayoutCalculation(answers);
+    if (calc) {
+      federalTotal = calc.lumpSumTotal;
+      personalShare = calc.personalShareRub ?? 0;
+      if (calc.recipientsNumeric != null) recipientsCount = calc.recipientsNumeric;
+      documentsSummary = resolveFreshQuizSummary(answers);
+      freshConsultantPayload = calc.consultant;
+    }
+  }
 
   let problemType: string | null = null;
   let submittedTo: string | null = null;
@@ -97,13 +121,14 @@ export function buildStoredLeadRecord(
     applicantRole: resolveApplicantRole(answers),
     complexStatus: resolveComplexStatus(answers),
     recipientsCount,
-    documentsOnHand: resolveDocumentsOnHand(answers),
+    documentsOnHand: documentsSummary,
+    freshConsultantPayload,
     problemType,
     submittedTo,
     monthsWaiting: quiz?.scenario === "B" ? null : null,
     stuckSummary: null,
     region: payload.region.trim(),
-    baseTotal: AMOUNTS.baseTotal,
+    baseTotal: federalTotal,
     personalShare,
     estimatedDelayLoss: 0,
     name: payload.name.trim(),

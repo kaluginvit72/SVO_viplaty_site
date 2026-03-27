@@ -1,10 +1,13 @@
 import { quizFlowCopy } from "@/data/texts/quiz-copy";
+import { clarifyHasOfficialFiling } from "@/lib/quiz/steps";
 import type { QuizAnswers, QuizStepId } from "@/types/quiz";
 
 /** Проверка шага по переданному снимку ответов (для мгновенного перехода в clarify). */
 export function validateQuizStep(id: QuizStepId | undefined, a: QuizAnswers): string | null {
   if (!id) return null;
   switch (id) {
+    case "clarify_stage_1":
+      return a.clarifyStage1 ? null : quizFlowCopy.validation.pickOne;
     case "clarify_doc_1":
       return a.clarifyDeathCert ? null : quizFlowCopy.validation.pickOne;
     case "clarify_doc_2":
@@ -16,24 +19,32 @@ export function validateQuizStep(id: QuizStepId | undefined, a: QuizAnswers): st
     case "clarify_doc_5":
       return a.clarifyFilingStatus ? null : quizFlowCopy.validation.pickOne;
     case "clarify_doc_6":
-      return a.clarifyWhereSubmitted ? null : quizFlowCopy.validation.pickOne;
-    case "clarify_doc_7":
-      return a.clarifyConsequenceFocus ? null : quizFlowCopy.validation.pickOne;
-    case "deceased":
-      return a.deceasedRole ? null : quizFlowCopy.validation.pickOne;
-    case "relation":
-      return a.relation ? null : quizFlowCopy.validation.pickOne;
-    case "relation_complex":
-      return a.relationComplexSub ? null : quizFlowCopy.validation.pickCloser;
-    case "recipients":
-      return a.recipients ? null : quizFlowCopy.validation.pickOne;
+      if (!clarifyHasOfficialFiling(a.clarifyFilingStatus)) return null;
+      return a.clarifyWhereSubmitted &&
+        a.clarifyWhereSubmitted !== "not_yet"
+        ? null
+        : quizFlowCopy.validation.pickOne;
+    case "clarify_feedback_1":
+      if (!clarifyHasOfficialFiling(a.clarifyFilingStatus)) return null;
+      return a.clarifyPostFilingFeedback ? null : quizFlowCopy.validation.pickOne;
+    case "clarify_goal_1":
+      return a.clarifyGoalPrimary ? null : quizFlowCopy.validation.pickOne;
+    case "clarify_goal_2":
+      return a.clarifyGoalSecondary ? null : quizFlowCopy.validation.pickOne;
+    case "service_status":
+      return a.serviceStatus ? null : quizFlowCopy.validation.pickOne;
+    case "applicant_role":
+      return a.freshApplicantRole ? null : quizFlowCopy.validation.pickOne;
     case "recipients_count":
-      return a.recipientsExact ? null : quizFlowCopy.validation.pickRecipients;
-    case "documents": {
-      const d = a.documents;
-      if (!d || d.length === 0) return quizFlowCopy.validation.documentsMin;
-      return null;
-    }
+      return a.freshRecipientsCount ? null : quizFlowCopy.validation.pickOne;
+    case "children_count":
+      return a.freshChildrenCount != null ? null : quizFlowCopy.validation.pickOne;
+    case "death_basis":
+      return a.deathBasis ? null : quizFlowCopy.validation.pickOne;
+    case "ambiguity_flag":
+      return a.ambiguityFlag ? null : quizFlowCopy.validation.pickOne;
+    case "calc_mode":
+      return a.calcMode ? null : quizFlowCopy.validation.pickOne;
     case "region": {
       const r = (a.region ?? "").trim();
       if (r.length < 2) return quizFlowCopy.validation.regionShort;

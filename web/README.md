@@ -30,6 +30,8 @@ npm run dev
 
 Дополнительно перед первым продом: **favicon** (`src/app/icon.svg` или замена по [доке Next.js](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/app-icons)), актуальность текстов **`/privacy`** и **`/consent`**.
 
+**Вебхук (n8n) не вызывается / узел пустой:** переменная **`LEAD_WEBHOOK_URL`** должна быть в **`.env` в каталоге с `docker-compose.yml` на VPS** (образ не читает `web/.env`). После правок: **`docker compose up -d`**. Проверка: **`docker exec svo-site printenv LEAD_WEBHOOK_URL`**. В браузере в ответе **`POST /api/lead`** смотрите **`webhookSent`**. В n8n: workflow **включён** (Active), узел Webhook — метод **POST**, URL **Production** (не «Listen for test event»). Логи контейнера: **`docker logs svo-site 2>&1 | tail -80`** — ищите **`[webhook]`**. Если задан **`LEAD_WEBHOOK_SECRET`**, приёмник должен ожидать **`Authorization: Bearer …`**, иначе уберите секрет с сайта.
+
 ## Скрипты
 
 | Команда              | Назначение                                      |

@@ -1,3 +1,5 @@
+import type { FreshConsultantPayloadFields } from "@/lib/calculator/fresh-payout-calculator";
+import type { ClarifyInsightPayload } from "@/types/clarify-insight";
 import type { FlowMode } from "@/types/quiz";
 
 /** @deprecated для обратной совместимости старых записей */
@@ -15,6 +17,10 @@ export interface StoredLeadRecord {
   complexStatus: string | null;
   recipientsCount: number | null;
   documentsOnHand: string | null;
+  /** Разбор квиза «Прояснение ситуации» для CRM / вебхука; только при flowMode clarify */
+  clarifyInsight?: ClarifyInsightPayload | null;
+  /** Новый квиз расчёта выплат — суммы и разбивка для CRM / вебхука */
+  freshConsultantPayload?: FreshConsultantPayloadFields | null;
   problemType: string | null;
   submittedTo: string | null;
   monthsWaiting: number | null;

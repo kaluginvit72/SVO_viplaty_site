@@ -3,33 +3,36 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuiz } from "@/contexts/quiz-context";
-import { clampStepIndex, getVisibleSteps, isClarifyStep } from "@/lib/quiz/steps";
+import { clampStepIndex, getVisibleSteps, isClarifyStep, isFreshPayStep } from "@/lib/quiz/steps";
 import { validateQuizStep } from "@/lib/quiz/validate-quiz-step";
-import type { DocumentOption, QuizAnswers, QuizStepId } from "@/types/quiz";
+import type { QuizAnswers, QuizStepId } from "@/types/quiz";
+import { quizFlowCopy, stepQuestions } from "@/data/texts/quiz-copy";
 import {
-  deceasedOptions,
-  documentOptions,
-  recipientsExactOptions,
-  recipientsOptions,
-  relationComplexOptions,
-  relationOptions,
-  quizFlowCopy,
-  stepQuestions,
-} from "@/data/texts/quiz-copy";
+  ambiguityFlagOptions,
+  calcModeOptions,
+  deathBasisOptions,
+  freshApplicantRoleOptions,
+  freshChildrenCountOptions,
+  freshRecipientsCountOptions,
+  freshStepQuestions,
+  serviceStatusOptions,
+} from "@/data/texts/fresh-quiz-copy";
 import {
-  clarifyConsequenceOptions,
   clarifyCopiesOptions,
   clarifyDeathCertOptions,
   clarifyFilingOptions,
+  clarifyGoalPrimaryOptions,
+  clarifyGoalSecondaryOptions,
   clarifyKinshipOptions,
   clarifyMilitaryNoticeOptions,
+  clarifyPostFilingFeedbackOptions,
   clarifyQuizCopy,
+  clarifyStage1Options,
   clarifyStepHints,
   clarifyStepQuestions,
-  clarifyWhereOptions,
+  clarifyWhereSubmittedOnlyOptions,
 } from "@/data/texts/clarify-quiz-copy";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
@@ -37,9 +40,9 @@ import { ClarifyThankYou } from "@/components/quiz/ClarifyThankYou";
 import { QuizResult } from "@/components/quiz/QuizResult";
 import { cn } from "@/lib/utils";
 
-/** Шаги полного расчёта, где нужен явный «Далее» (мультивыбор или свободный ввод). */
+/** Шаги полного расчёта, где нужен явный «Далее» (свободный ввод региона). */
 function freshStepNeedsNextButton(id: QuizStepId | undefined): boolean {
-  return id === "documents" || id === "region";
+  return id === "region";
 }
 
 function QuizFlowSkeleton() {
@@ -126,13 +129,18 @@ export function QuizFlow() {
     (patch: Partial<QuizAnswers>) => {
       if (flowMode !== "clarify") return;
       setError(null);
-      const nextAnswers = { ...answers, ...patch };
+      const mergedPatch: Partial<QuizAnswers> = { ...patch };
+      if (patch.clarifyFilingStatus === "not_yet") {
+        mergedPatch.clarifyWhereSubmitted = undefined;
+        mergedPatch.clarifyPostFilingFeedback = undefined;
+      }
+      const nextAnswers = { ...answers, ...mergedPatch };
       const err = validateQuizStep(currentId, nextAnswers);
       if (err) {
         setError(err);
         return;
       }
-      setAnswers(patch);
+      setAnswers(mergedPatch);
       if (safeIndex >= steps.length - 1) {
         complete();
       } else {
@@ -283,9 +291,11 @@ export function QuizFlow() {
   const titleForStep =
     currentId && clarifyStepQuestions[currentId]
       ? clarifyStepQuestions[currentId]
-      : currentId
-        ? stepQuestions[currentId] ?? ""
-        : "";
+      : currentId && freshStepQuestions[currentId]
+        ? freshStepQuestions[currentId]
+        : currentId
+          ? stepQuestions[currentId] ?? ""
+          : "";
 
   const clarifyHint = currentId ? clarifyStepHints[currentId] : undefined;
 
@@ -349,6 +359,11 @@ export function QuizFlow() {
           {flowMode === "clarify" && currentId && isClarifyStep(currentId) ? (
             <p className="mt-2 text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">
               {clarifyQuizCopy.tapToContinue}
+            </p>
+          ) : null}
+          {flowMode === "fresh" && currentId && isFreshPayStep(currentId) && currentId !== "region" ? (
+            <p className="mt-2 text-xs leading-relaxed text-[var(--text-secondary)] sm:text-sm">
+              {quizFlowCopy.tapToContinueFresh}
             </p>
           ) : null}
         </div>
@@ -430,6 +445,22 @@ function StepBody({
   const pick = onClarifyPick ?? ((p: Partial<QuizAnswers>) => setAnswers(p));
   const fresh = onFreshPick ?? ((p: Partial<QuizAnswers>) => setAnswers(p));
 
+  if (id === "clarify_stage_1") {
+    return (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Ваша ситуация">
+        {clarifyStage1Options.map((o) => (
+          <OptionRow
+            key={o.id}
+            selected={answers.clarifyStage1 === o.id}
+            onClick={() => pick({ clarifyStage1: o.id })}
+          >
+            {o.label}
+          </OptionRow>
+        ))}
+      </div>
+    );
+  }
+
   if (id === "clarify_doc_1") {
     return (
       <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Свидетельство о смерти">
@@ -480,7 +511,7 @@ function StepBody({
 
   if (id === "clarify_doc_4") {
     return (
-      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Копии документов">
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Готовность пакета для подачи">
         {clarifyCopiesOptions.map((o) => (
           <OptionRow
             key={o.id}
@@ -513,8 +544,8 @@ function StepBody({
 
   if (id === "clarify_doc_6") {
     return (
-      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Куда направляли документы">
-        {clarifyWhereOptions.map((o) => (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Куда подавали документы">
+        {clarifyWhereSubmittedOnlyOptions.map((o) => (
           <OptionRow
             key={o.id}
             selected={answers.clarifyWhereSubmitted === o.id}
@@ -527,14 +558,14 @@ function StepBody({
     );
   }
 
-  if (id === "clarify_doc_7") {
+  if (id === "clarify_feedback_1") {
     return (
-      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Что прояснить">
-        {clarifyConsequenceOptions.map((o) => (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Ситуация после подачи">
+        {clarifyPostFilingFeedbackOptions.map((o) => (
           <OptionRow
             key={o.id}
-            selected={answers.clarifyConsequenceFocus === o.id}
-            onClick={() => pick({ clarifyConsequenceFocus: o.id })}
+            selected={answers.clarifyPostFilingFeedback === o.id}
+            onClick={() => pick({ clarifyPostFilingFeedback: o.id })}
             description={o.hint}
           >
             {o.label}
@@ -544,14 +575,14 @@ function StepBody({
     );
   }
 
-  if (id === "deceased") {
+  if (id === "clarify_goal_1") {
     return (
-      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Статус погибшего">
-        {deceasedOptions.map((o) => (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Что мешает">
+        {clarifyGoalPrimaryOptions.map((o) => (
           <OptionRow
             key={o.id}
-            selected={answers.deceasedRole === o.id}
-            onClick={() => fresh({ deceasedRole: o.id })}
+            selected={answers.clarifyGoalPrimary === o.id}
+            onClick={() => pick({ clarifyGoalPrimary: o.id })}
           >
             {o.label}
           </OptionRow>
@@ -560,19 +591,14 @@ function StepBody({
     );
   }
 
-  if (id === "relation") {
+  if (id === "clarify_goal_2") {
     return (
-      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Ваш статус">
-        {relationOptions.map((o) => (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Что нужнее всего">
+        {clarifyGoalSecondaryOptions.map((o) => (
           <OptionRow
             key={o.id}
-            selected={answers.relation === o.id}
-            onClick={() =>
-              fresh({
-                relation: o.id,
-                ...(o.id !== "complex" ? { relationComplexSub: undefined } : {}),
-              })
-            }
+            selected={answers.clarifyGoalSecondary === o.id}
+            onClick={() => pick({ clarifyGoalSecondary: o.id })}
           >
             {o.label}
           </OptionRow>
@@ -581,14 +607,14 @@ function StepBody({
     );
   }
 
-  if (id === "relation_complex") {
+  if (id === "service_status") {
     return (
-      <div className="grid gap-3 sm:gap-3" role="listbox">
-        {relationComplexOptions.map((o) => (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Категория погибшего">
+        {serviceStatusOptions.map((o) => (
           <OptionRow
             key={o.id}
-            selected={answers.relationComplexSub === o.id}
-            onClick={() => fresh({ relationComplexSub: o.id })}
+            selected={answers.serviceStatus === o.id}
+            onClick={() => fresh({ serviceStatus: o.id })}
           >
             {o.label}
           </OptionRow>
@@ -597,19 +623,14 @@ function StepBody({
     );
   }
 
-  if (id === "recipients") {
+  if (id === "applicant_role") {
     return (
-      <div className="grid gap-3 sm:gap-3" role="listbox">
-        {recipientsOptions.map((o) => (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Кто вы">
+        {freshApplicantRoleOptions.map((o) => (
           <OptionRow
             key={o.id}
-            selected={answers.recipients === o.id}
-            onClick={() =>
-              fresh({
-                recipients: o.id,
-                ...(o.id !== "me_plus_4_or_more" ? { recipientsExact: undefined } : {}),
-              })
-            }
+            selected={answers.freshApplicantRole === o.id}
+            onClick={() => fresh({ freshApplicantRole: o.id })}
           >
             {o.label}
           </OptionRow>
@@ -621,15 +642,15 @@ function StepBody({
   if (id === "recipients_count") {
     return (
       <div
-        className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-3"
+        className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-3"
         role="listbox"
-        aria-label="Число претендентов"
+        aria-label="Число получателей разовых выплат"
       >
-        {recipientsExactOptions.map((o) => (
+        {freshRecipientsCountOptions.map((o) => (
           <OptionRow
             key={o.id}
-            selected={answers.recipientsExact === o.id}
-            onClick={() => fresh({ recipientsExact: o.id })}
+            selected={answers.freshRecipientsCount === o.id}
+            onClick={() => fresh({ freshRecipientsCount: o.id })}
             className="justify-center text-center text-base font-medium"
           >
             {o.label}
@@ -639,28 +660,65 @@ function StepBody({
     );
   }
 
-  if (id === "documents") {
-    const selected = new Set(answers.documents ?? []);
-    const toggle = (opt: DocumentOption) => {
-      const next = new Set(selected);
-      if (next.has(opt)) next.delete(opt);
-      else next.add(opt);
-      setAnswers({ documents: Array.from(next) });
-    };
+  if (id === "children_count") {
     return (
-      <div className="space-y-3" role="group" aria-label={quizFlowCopy.documentsGroupAria}>
-        {documentOptions.map((o) => (
-          <label
+      <div className="grid gap-3 sm:grid-cols-2 sm:gap-3" role="listbox" aria-label="Дети для ежемесячных выплат">
+        {freshChildrenCountOptions.map((o) => (
+          <OptionRow
             key={o.id}
-            className="flex min-h-14 cursor-pointer items-center gap-4 rounded-xl border border-[var(--cool-border)] bg-white px-4 py-3.5 text-left text-base leading-snug transition-[border-color,background-color,box-shadow] hover:bg-[var(--neutral-surface)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[color-mix(in_srgb,var(--deep-blue)_25%,transparent)] has-[:focus-visible]:ring-offset-2"
+            selected={answers.freshChildrenCount === o.id}
+            onClick={() => fresh({ freshChildrenCount: o.id })}
           >
-            <Checkbox
-              checked={selected.has(o.id)}
-              onCheckedChange={() => toggle(o.id)}
-              aria-label={o.label}
-            />
-            <span className="text-[var(--text-primary)]">{o.label}</span>
-          </label>
+            {o.label}
+          </OptionRow>
+        ))}
+      </div>
+    );
+  }
+
+  if (id === "death_basis") {
+    return (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Причина смерти">
+        {deathBasisOptions.map((o) => (
+          <OptionRow
+            key={o.id}
+            selected={answers.deathBasis === o.id}
+            onClick={() => fresh({ deathBasis: o.id })}
+          >
+            {o.label}
+          </OptionRow>
+        ))}
+      </div>
+    );
+  }
+
+  if (id === "ambiguity_flag") {
+    return (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Спор или неясность">
+        {ambiguityFlagOptions.map((o) => (
+          <OptionRow
+            key={o.id}
+            selected={answers.ambiguityFlag === o.id}
+            onClick={() => fresh({ ambiguityFlag: o.id })}
+          >
+            {o.label}
+          </OptionRow>
+        ))}
+      </div>
+    );
+  }
+
+  if (id === "calc_mode") {
+    return (
+      <div className="grid gap-3 sm:gap-3" role="listbox" aria-label="Тип расчёта">
+        {calcModeOptions.map((o) => (
+          <OptionRow
+            key={o.id}
+            selected={answers.calcMode === o.id}
+            onClick={() => fresh({ calcMode: o.id })}
+          >
+            {o.label}
+          </OptionRow>
         ))}
       </div>
     );

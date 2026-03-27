@@ -16,6 +16,13 @@ const WAITING_TO_MONTHS: Record<WaitingOption, number> = {
 };
 
 export function getRecipientsCount(answers: QuizAnswers): number {
+  if (answers.serviceStatus != null && answers.freshRecipientsCount != null) {
+    const r = answers.freshRecipientsCount;
+    if (r === "unknown") return 1;
+    if (r === "5_plus") return 5;
+    const n = Number(r);
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  }
   switch (answers.recipients) {
     case "only_me":
       return 1;

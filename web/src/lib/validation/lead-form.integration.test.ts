@@ -111,7 +111,31 @@ describe("leadApiSchema (integration)", () => {
     expect(r.success).toBe(true);
   });
 
-  it("clarify завершённый с полными ответами", () => {
+  it("clarify завершённый с полными ответами (новый квиз)", () => {
+    const r = leadApiSchema.safeParse({
+      name: "Иван",
+      phone: "+79001234567",
+      region: "Москва",
+      consent: true,
+      quiz: {
+        flowMode: "clarify",
+        completed: true,
+        answers: {
+          clarifyStage1: "collecting_docs",
+          clarifyDeathCert: "yes",
+          clarifyMilitaryNotice: "yes",
+          clarifyKinshipDocs: "complete",
+          clarifyCopiesStatus: "ready",
+          clarifyFilingStatus: "not_yet",
+          clarifyGoalPrimary: "missing_docs",
+          clarifyGoalSecondary: "check_package",
+        },
+      },
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("clarify завершённый — обратная совместимость со старым набором полей", () => {
     const r = leadApiSchema.safeParse({
       name: "Иван",
       phone: "+79001234567",

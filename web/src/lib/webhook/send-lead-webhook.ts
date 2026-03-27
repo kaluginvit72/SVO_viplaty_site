@@ -16,18 +16,16 @@ export async function sendLeadWebhook(
 ): Promise<LeadWebhookSendResult> {
   const url = process.env.LEAD_WEBHOOK_URL?.trim();
   if (!url) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn(
-        "[webhook] Заявка не отправлена на вебхук: задайте LEAD_WEBHOOK_URL в .env",
-      );
-    }
+    console.warn(
+      "[webhook] Пропуск: LEAD_WEBHOOK_URL не задан (проверьте .env у docker-compose на VPS, не только web/.env)",
+    );
     return { ok: false, skipped: true, reason: "no_config" };
   }
 
   const secret = process.env.LEAD_WEBHOOK_SECRET?.trim();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "User-Agent": "svo-site/lead-webhook",
+    Accept: "application/json",
   };
   if (secret) {
     headers.Authorization = `Bearer ${secret}`;
@@ -61,6 +59,7 @@ export async function sendLeadWebhook(
       return { ok: false, error: `HTTP ${res.status}` };
     }
 
+    console.log("[webhook] OK, lead id=", lead.id);
     return { ok: true };
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);

@@ -1,5 +1,8 @@
 import type {
-  ClarifyConsequenceFocus,
+  ClarifyGoalPrimary,
+  ClarifyGoalSecondary,
+  ClarifyPostFilingFeedback,
+  ClarifyStage1,
   ClarifyCopiesStatus,
   ClarifyDeathCertStatus,
   ClarifyFilingStatus,
@@ -8,12 +11,26 @@ import type {
   ClarifyWhereSubmitted,
 } from "@/types/quiz";
 
+export const clarifyStage1Options: { id: ClarifyStage1; label: string }[] = [
+  { id: "start", label: "Я только начинаю разбираться" },
+  { id: "collecting_docs", label: "Уже собираю документы" },
+  {
+    id: "ready_to_file",
+    label: "Документы почти готовы, хочу понять, куда и как подавать",
+  },
+  { id: "already_filed", label: "Уже подавал(а) документы" },
+  {
+    id: "post_filing_problem",
+    label: "После подачи возникла проблема или непонятная ситуация",
+  },
+];
+
 export const clarifyDeathCertOptions: {
   id: ClarifyDeathCertStatus;
   label: string;
 }[] = [
-  { id: "yes", label: "Да, свидетельство о смерти уже на руках" },
-  { id: "in_progress", label: "Заказали / получаем, ещё в процессе" },
+  { id: "yes", label: "Да, уже на руках" },
+  { id: "in_progress", label: "Оформляем, ещё в процессе" },
   { id: "no", label: "Пока нет" },
 ];
 
@@ -21,28 +38,36 @@ export const clarifyMilitaryNoticeOptions: {
   id: ClarifyMilitaryNoticeStatus;
   label: string;
 }[] = [
-  { id: "yes", label: "Да, есть извещение или справка из части" },
-  { id: "requested_waiting", label: "Запрашивали, ждём или уточняем" },
+  { id: "yes", label: "Да, есть" },
+  { id: "requested_waiting", label: "Запрашивали, ждём" },
   { id: "no", label: "Пока нет" },
+  { id: "unsure", label: "Не понимаю, какой именно документ нужен" },
 ];
 
 export const clarifyKinshipOptions: {
   id: ClarifyKinshipDocsStatus;
   label: string;
 }[] = [
-  { id: "complete", label: "Да, пакет по родству в полном объёме" },
-  { id: "partial", label: "Есть часть документов, не всё" },
+  { id: "complete", label: "Да, всё собрано" },
+  { id: "partial", label: "Есть часть документов" },
   { id: "none", label: "Пока нет" },
-  { id: "unsure", label: "Затрудняюсь оценить, что именно нужно" },
+  { id: "unsure", label: "Не понимаю, чего именно не хватает" },
 ];
 
 export const clarifyCopiesOptions: {
   id: ClarifyCopiesStatus;
   label: string;
 }[] = [
-  { id: "ready", label: "Копии заверены или готовы к подаче" },
-  { id: "collecting", label: "Собираем и заверяем, ещё в работе" },
-  { id: "need_guidance", label: "Нужна подсказка, что заверять и в каком виде" },
+  { id: "ready", label: "Да, всё основное готово" },
+  { id: "collecting", label: "Частично готово, ещё собираем" },
+  {
+    id: "missing_details",
+    label: "Не хватает отдельных документов или сведений",
+  },
+  {
+    id: "need_guidance",
+    label: "Не понимаю, что должно входить в полный пакет",
+  },
 ];
 
 export const clarifyFilingOptions: {
@@ -52,84 +77,133 @@ export const clarifyFilingOptions: {
 }[] = [
   {
     id: "not_yet",
-    label: "Ещё не подавали заявление или полный пакет официально",
-    hint: "Только готовим или передаём «на словах» — без отметки о приёме.",
+    label: "Нет, ещё не подавали",
+    hint: "Только готовите или передавали без официальной регистрации обращения.",
   },
   {
     id: "partial",
-    label: "Уже подавали часть документов, продолжаем доносить пакет",
+    label: "Подавали часть документов",
     hint: "В инстанции зарегистрировано не всё, что планировали.",
   },
   {
     id: "full_waiting",
-    label: "Подали комплект и ждём ответа",
-    hint: "Есть подтверждение приёма или основание считать пакет у ведомства.",
+    label: "Подали полный пакет",
+    hint: "Есть основание считать, что комплект у ведомства и идёт рассмотрение.",
   },
   {
-    id: "had_feedback",
-    label: "Уже были ответы: тишина долго, просят донести, отказ или часть выплат",
-    hint: "Нужно разобрать, что это значит для дальнейших шагов — без обещания исхода.",
+    id: "unclear_submission",
+    label: "Что-то передавали, но не уверен(а), что это считается официальной подачей",
+    hint: "Нужно отделить «устно передали» от зарегистрированного обращения.",
   },
 ];
 
+/** Полный справочник (в т.ч. not_yet) — для сводки и старых ответов. */
 export const clarifyWhereOptions: {
   id: ClarifyWhereSubmitted;
   label: string;
 }[] = [
-  { id: "not_yet", label: "Пока никуда не подавали — вопрос не про адрес подачи" },
+  { id: "not_yet", label: "Не подавали официально" },
   { id: "military_unit", label: "В воинскую часть" },
   { id: "voenkomat", label: "В военкомат" },
   { id: "sfr_mfc", label: "В СФР или МФЦ" },
-  { id: "sogaz", label: "В СОГАЗ или по страховой линии" },
-  { id: "several", label: "В несколько инстанций" },
-  { id: "other", label: "В другое ведомство / иной канал" },
+  { id: "sogaz", label: "По страховой линии / в СОГАЗ" },
+  { id: "several", label: "В несколько мест" },
+  { id: "other", label: "В другое место" },
 ];
 
-export const clarifyConsequenceOptions: {
-  id: ClarifyConsequenceFocus;
+/** Куда подавали — только при filing ≠ not_yet (UI шага clarify_doc_6). */
+export const clarifyWhereSubmittedOnlyOptions: {
+  id: Exclude<ClarifyWhereSubmitted, "not_yet">;
+  label: string;
+}[] = [
+  { id: "military_unit", label: "В воинскую часть" },
+  { id: "voenkomat", label: "В военкомат" },
+  { id: "sfr_mfc", label: "В СФР или МФЦ" },
+  { id: "sogaz", label: "По страховой линии / в СОГАЗ" },
+  { id: "several", label: "В несколько мест" },
+  { id: "other", label: "В другое место" },
+];
+
+export const clarifyPostFilingFeedbackOptions: {
+  id: ClarifyPostFilingFeedback;
   label: string;
   hint?: string;
 }[] = [
+  { id: "just_waiting", label: "Просто ждём, ответа ещё нет" },
   {
-    id: "timelines_stages",
-    label: "Ориентиры по срокам и типичным этапам после подачи",
-    hint: "Общая логика очередности, не «гарантированные даты».",
+    id: "waiting_too_long",
+    label: "Ждём уже слишком долго",
+    hint: "Нет движения заметно дольше, чем ожидали.",
   },
   {
-    id: "incomplete_package_effects",
-    label: "Что обычно тормозит при неполном пакете или пробелах в документах",
-    hint: "Почему могут затягивать или возвращать на доработку.",
+    id: "need_more_documents",
+    label: "Попросили донести документы",
   },
+  { id: "refusal", label: "Получили отказ" },
+  { id: "partial_payment", label: "Пришла только часть выплат" },
   {
-    id: "after_authority_response",
-    label: "Уже был ответ ведомства — как читать ситуацию и что часто делают дальше",
-    hint: "Без оценки вашего исхода как юридического результата.",
-  },
-  {
-    id: "full_overview",
-    label: "Общая картина: сбор, подача и ожидание в связке",
-    hint: "Сводно, без углубления в один пункт.",
+    id: "response_unclear",
+    label: "Был ответ, но не понимаю, что он означает",
   },
 ];
 
+export const clarifyGoalPrimaryOptions: {
+  id: ClarifyGoalPrimary;
+  label: string;
+}[] = [
+  { id: "no_start", label: "Не понимаю, с чего начать" },
+  { id: "missing_docs", label: "Не понимаю, каких документов не хватает" },
+  {
+    id: "filing_order",
+    label: "Не понимаю, куда и в каком порядке подавать",
+  },
+  {
+    id: "after_filing",
+    label: "Не понимаю, что делать после подачи",
+  },
+  {
+    id: "authority_response",
+    label: "Не понимаю ответ ведомства",
+  },
+];
+
+export const clarifyGoalSecondaryOptions: {
+  id: ClarifyGoalSecondary;
+  label: string;
+}[] = [
+  { id: "next_steps", label: "Пошагово понять, что делать дальше" },
+  { id: "check_package", label: "Проверить, всё ли готово по документам" },
+  { id: "find_blocker", label: "Понять, где сейчас застопорилось дело" },
+  { id: "full_overview", label: "Получить общую картину по моей ситуации" },
+];
+
 export const clarifyStepQuestions: Record<string, string> = {
-  clarify_doc_1: "Есть ли уже свидетельство о смерти?",
-  clarify_doc_2: "Есть ли извещение из воинской части или аналогичная справка?",
-  clarify_doc_3: "Как обстоят дела с документами, подтверждающими родство?",
-  clarify_doc_4: "Копии документов и комплект для подачи — в каком состоянии?",
-  clarify_doc_5: "Уже подавали документы или заявление официально?",
-  clarify_doc_6: "Если уже подавали — куда направляли пакет в первую очередь?",
-  clarify_doc_7: "Что для вас сейчас важнее прояснить про дальнейшие шаги?",
+  clarify_stage_1: "Что сейчас лучше всего описывает вашу ситуацию?",
+  clarify_doc_1: "Есть ли у вас свидетельство о смерти?",
+  clarify_doc_2:
+    "Есть ли у вас извещение из части или другой документ по обстоятельствам?",
+  clarify_doc_3: "Есть ли у вас документы, подтверждающие родство?",
+  clarify_doc_4:
+    "Кроме основных документов, всё ли готово для подачи заявления?",
+  clarify_doc_5: "Уже подавали документы официально?",
+  clarify_doc_6: "Куда вы подавали документы?",
+  clarify_feedback_1: "Что сейчас происходит после подачи?",
+  clarify_goal_1: "Что сейчас мешает больше всего?",
+  clarify_goal_2: "Что вам сейчас нужнее всего?",
 };
 
 /** Короткие пояснения под заголовком шага. */
 export const clarifyStepHints: Partial<Record<string, string>> = {
   clarify_doc_5:
-    "От этого зависит, какие «последствия» подачи имеет смысл обсуждать: сроки, доработка пакета или работа с ответом ведомства.",
+    "От ответа зависит, задаём ли вопросы про конкретное ведомство и ситуацию после подачи.",
   clarify_doc_6:
-    "Если официально ещё не подавали, отметьте первый пункт — так мы не перепутаем этапы.",
-  clarify_doc_7:
-    "Это не юридический прогноз исхода, а ориентиры, с чего обычно начинают разбор в похожих ситуациях.",
+    "Выберите основной канал, куда ушёл пакет или заявление в первую очередь.",
+  clarify_feedback_1:
+    "Это помогает понять, на каком этапе вы сейчас — ожидание, доработка или разбор ответа.",
+  clarify_goal_1:
+    "Честный ответ здесь экономит время на созвоне: сразу видно, куда копать глубже.",
+  clarify_goal_2:
+    "Можно выбрать то, что снимет тревожность быстрее всего — без обещания конкретного исхода.",
 };
 
 export const clarifyQuizCopy = {
@@ -147,19 +221,19 @@ export const clarifyQuizCopy = {
   diagnosticBlocks: [
     {
       title: "Что зафиксировано",
-      body: "Ответы по свидетельству, извещению из части, родству и готовности копий — как опорная картина, без оценки исхода.",
+      body: "Сегмент пути, свидетельство, документ из части, родство и готовность пакета — как опорная картина, без оценки исхода.",
     },
     {
       title: "Что уже подано",
-      body: "Статус официальной подачи и направления в инстанции — чтобы не смешивать «устно передали» и зарегистрированное обращение.",
+      body: "Статус официальной подачи и маршрут — чтобы не смешивать «передали» и зарегистрированное обращение.",
     },
     {
       title: "Где возможное узкое место",
-      body: "Часто это неполный пакет, разные треки (часть / СФР / страховщик) или ожидание ответа без явной отметки о регистрации.",
+      body: "Часто это неполный пакет, разные треки (часть / СФР / страховщик) или ожидание ответа без ясной отметки о приёме.",
     },
     {
       title: "Что важно проверить дальше",
-      body: "Запрос статуса у адресата, перечень недостающего при ответе «донести», раздельный учёт по каждому основанию выплат.",
+      body: "Статус у адресата, перечень недостающего при ответе «донести», раздельный учёт по каждому основанию выплат.",
     },
   ] as const,
 } as const;

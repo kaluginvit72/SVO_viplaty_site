@@ -109,6 +109,7 @@ export const quizFlowCopy = {
   progressQuestion: (n: number, total: number) => `Шаг ${n} из ${total}`,
   next: "Далее",
   showResult: "Показать предварительный расчёт",
+  tapToContinueFresh: "Выберите вариант — следующий шаг откроется сразу.",
   back: "Назад",
   documentsGroupAria: "Какие документы уже есть",
   submittedWhereHeading: "Куда уже относили документы или заявления",

@@ -1,4 +1,6 @@
 import { findRegionCatalogEntry } from "@/data/regions/catalog";
+import { isFreshQuizComplete } from "@/lib/calculator/fresh-payout-calculator";
+import { buildFreshPayoutBreakdownView } from "@/lib/calculator/fresh-payout-view";
 import type { PayoutBreakdownView, RegionalCatalogStatus } from "@/types/payouts";
 import type { QuizAnswers } from "@/types/quiz";
 import { AMOUNTS, showsChildMonthlyNote } from "@/lib/calculator";
@@ -68,7 +70,7 @@ function otherMeasures(): PayoutBreakdownView["otherMeasures"] {
   ];
 }
 
-export function buildPayoutBreakdownView(answers: QuizAnswers): PayoutBreakdownView {
+export function buildLegacyPayoutBreakdownView(answers: QuizAnswers): PayoutBreakdownView {
   const federalOneTimeLines = federalLines();
   const federalOneTimeTotal = federalOneTimeLines.reduce((s, x) => s + x.amountRub, 0);
 
@@ -135,6 +137,14 @@ export function buildPayoutBreakdownView(answers: QuizAnswers): PayoutBreakdownV
     },
     otherMeasures: otherMeasures(),
   };
+}
+
+/** Предрасчёт: новый квиз fresh или устаревшая цепочка. */
+export function buildPayoutBreakdownView(answers: QuizAnswers): PayoutBreakdownView {
+  if (isFreshQuizComplete(answers)) {
+    return buildFreshPayoutBreakdownView(answers);
+  }
+  return buildLegacyPayoutBreakdownView(answers);
 }
 
 /** Сумма трёх федеральных разовых строк для заголовка и доли (без региональных и ежемесячных). */

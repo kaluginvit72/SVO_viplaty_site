@@ -18,6 +18,7 @@ describe("getEstimatedWaitingMonths", () => {
     expect(getEstimatedWaitingMonths({ clarifyFilingStatus: "partial" })).toBe(2);
     expect(getEstimatedWaitingMonths({ clarifyFilingStatus: "full_waiting" })).toBe(4);
     expect(getEstimatedWaitingMonths({ clarifyFilingStatus: "had_feedback" })).toBe(4);
+    expect(getEstimatedWaitingMonths({ clarifyFilingStatus: "unclear_submission" })).toBe(4);
     expect(getEstimatedWaitingMonths({ clarifyFilingStatus: "not_yet" })).toBeNull();
   });
 });

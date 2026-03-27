@@ -1,49 +1,50 @@
 import { describe, expect, it } from "vitest";
-import { getVisibleSteps, isClarifyStep, clampStepIndex } from "@/lib/quiz/steps";
+import { getVisibleSteps, isClarifyStep, isFreshPayStep, clampStepIndex } from "@/lib/quiz/steps";
 import type { QuizAnswers } from "@/types/quiz";
 
+const FRESH_EIGHT: string[] = [
+  "service_status",
+  "applicant_role",
+  "recipients_count",
+  "children_count",
+  "death_basis",
+  "ambiguity_flag",
+  "region",
+  "calc_mode",
+];
+
 describe("getVisibleSteps", () => {
-  it("fresh: базовая цепочка без complex и без recipients_count", () => {
+  it("fresh: фиксированные 8 шагов независимо от ответов", () => {
     const a: QuizAnswers = {
-      deceasedRole: "mobilized",
-      relation: "spouse",
-      recipients: "only_me",
+      serviceStatus: "contract_mobilized",
+      freshApplicantRole: "spouse_registered",
     };
-    expect(getVisibleSteps("fresh", a)).toEqual([
-      "deceased",
-      "relation",
-      "recipients",
-      "documents",
-      "region",
-    ]);
+    expect(getVisibleSteps("fresh", a)).toEqual(FRESH_EIGHT);
+    expect(getVisibleSteps("fresh", {})).toEqual(FRESH_EIGHT);
   });
 
-  it("fresh: relation complex добавляет relation_complex", () => {
-    const a: QuizAnswers = { relation: "complex" };
-    const steps = getVisibleSteps("fresh", a);
-    expect(steps).toContain("relation_complex");
-    expect(steps.indexOf("relation_complex")).toBe(steps.indexOf("relation") + 1);
+  it("clarify: без подачи — 8 шагов", () => {
+    expect(getVisibleSteps("clarify", {})).toHaveLength(8);
+    expect(getVisibleSteps("clarify", {})[0]).toBe("clarify_stage_1");
+    expect(getVisibleSteps("clarify", {})[7]).toBe("clarify_goal_2");
   });
 
-  it("fresh: me_plus_4_or_more добавляет recipients_count", () => {
-    const a: QuizAnswers = { recipients: "me_plus_4_or_more" };
-    const steps = getVisibleSteps("fresh", a);
-    expect(steps).toContain("recipients_count");
-    const i = steps.indexOf("recipients");
-    expect(steps[i + 1]).toBe("recipients_count");
-  });
-
-  it("clarify: фиксированные 7 шагов", () => {
-    expect(getVisibleSteps("clarify", {})).toHaveLength(7);
-    expect(getVisibleSteps("clarify", {})[0]).toBe("clarify_doc_1");
-    expect(getVisibleSteps("clarify", {})[6]).toBe("clarify_doc_7");
+  it("clarify: после подачи добавляет doc_6 и feedback", () => {
+    const steps = getVisibleSteps("clarify", { clarifyFilingStatus: "partial" });
+    expect(steps).toHaveLength(10);
+    expect(steps).toContain("clarify_doc_6");
+    expect(steps).toContain("clarify_feedback_1");
   });
 });
 
-describe("isClarifyStep", () => {
-  it("определяет шаги clarify", () => {
+describe("isClarifyStep / isFreshPayStep", () => {
+  it("определяет шаги clarify и fresh", () => {
     expect(isClarifyStep("clarify_doc_1")).toBe(true);
-    expect(isClarifyStep("deceased")).toBe(false);
+    expect(isClarifyStep("clarify_feedback_1")).toBe(true);
+    expect(isClarifyStep("service_status")).toBe(false);
+    expect(isFreshPayStep("service_status")).toBe(true);
+    expect(isFreshPayStep("calc_mode")).toBe(true);
+    expect(isFreshPayStep("clarify_doc_1")).toBe(false);
   });
 });
 

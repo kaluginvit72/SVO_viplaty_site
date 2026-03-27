@@ -43,6 +43,16 @@ export function formatTelegramLeadMessageHtml(lead: StoredLeadRecord): string {
     lines.push("📋 <b>Ответы про документы</b>");
     lines.push(escapeHtml(orDash(lead.documentsOnHand)));
     lines.push("");
+    if (lead.clarifyInsight?.telegram_summary_plain) {
+      lines.push("🧭 <b>Квиз: сводка для консультанта</b>");
+      lines.push(
+        escapeHtml(lead.clarifyInsight.telegram_summary_plain).replaceAll(
+          "\n",
+          "<br/>",
+        ),
+      );
+      lines.push("");
+    }
     lines.push(
       "<i>Предварительный расчёт суммы на сайте не выполнялся — только опрос про документы.</i>",
     );
@@ -59,6 +69,11 @@ export function formatTelegramLeadMessageHtml(lead: StoredLeadRecord): string {
 
     if (lead.documentsOnHand) {
       lines.push(`<b>Документы на руках:</b> ${escapeHtml(lead.documentsOnHand)}`);
+    }
+    if (lead.freshConsultantPayload?.consultant_summary) {
+      lines.push("");
+      lines.push("📊 <b>Предрасчёт (консультант)</b>");
+      lines.push(escapeHtml(lead.freshConsultantPayload.consultant_summary));
     }
 
     if (lead.scenario === "B") {

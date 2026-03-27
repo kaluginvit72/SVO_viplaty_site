@@ -8,6 +8,9 @@ export function preserveClarifyAnswersForFreshFlow(
   answers: QuizAnswers,
 ): QuizAnswers {
   const next: QuizAnswers = {};
+  if (answers.clarifyStage1 != null) {
+    next.clarifyStage1 = answers.clarifyStage1;
+  }
   if (answers.clarifyDeathCert != null) {
     next.clarifyDeathCert = answers.clarifyDeathCert;
   }
@@ -28,6 +31,15 @@ export function preserveClarifyAnswersForFreshFlow(
   }
   if (answers.clarifyConsequenceFocus != null) {
     next.clarifyConsequenceFocus = answers.clarifyConsequenceFocus;
+  }
+  if (answers.clarifyPostFilingFeedback != null) {
+    next.clarifyPostFilingFeedback = answers.clarifyPostFilingFeedback;
+  }
+  if (answers.clarifyGoalPrimary != null) {
+    next.clarifyGoalPrimary = answers.clarifyGoalPrimary;
+  }
+  if (answers.clarifyGoalSecondary != null) {
+    next.clarifyGoalSecondary = answers.clarifyGoalSecondary;
   }
   if (typeof answers.stuckMonthsWaiting === "number") {
     next.stuckMonthsWaiting = answers.stuckMonthsWaiting;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { AMOUNTS } from "@/lib/calculator";
+import { FRESH_AMOUNTS } from "@/lib/calculator/fresh-payout-calculator";
 import {
   buildPayoutBreakdownView,
   federalTotalForHeadline,
@@ -64,5 +65,56 @@ describe("buildPayoutBreakdownView (integration)", () => {
     expect(federalTotalForHeadline()).toBe(
       buildPayoutBreakdownView(minimalFreshAnswers("Москва")).federalOneTimeTotal,
     );
+  });
+});
+
+const completeNewFreshQuiz = (over: Partial<QuizAnswers> = {}): QuizAnswers => ({
+  serviceStatus: "contract_mobilized",
+  freshApplicantRole: "spouse_registered",
+  freshRecipientsCount: "1",
+  freshChildrenCount: "0",
+  deathBasis: "duty",
+  ambiguityFlag: "no",
+  region: "Москва",
+  calcMode: "federal_only",
+  ...over,
+});
+
+describe("buildPayoutBreakdownView — новый квиз (8 шагов)", () => {
+  it("freshMeta и federal total по FRESH_AMOUNTS", () => {
+    const view = buildPayoutBreakdownView(completeNewFreshQuiz());
+    expect(view.freshMeta).toBeDefined();
+    expect(view.federalOneTimeTotal).toBeCloseTo(FRESH_AMOUNTS.baseLumpStandard, 5);
+    const sumLines = view.federalOneTimeLines.reduce((s, l) => s + l.amountRub, 0);
+    expect(view.federalOneTimeTotal).toBeCloseTo(sumLines, 5);
+    expect(view.freshMeta!.headlinePrefix).toContain("ориентировочный");
+    expect(view.freshMeta!.precisionLabel).toBe("Предварительный расчёт");
+  });
+
+  it("консервативная ветка: страховая строка 0 ₽", () => {
+    const view = buildPayoutBreakdownView(
+      completeNewFreshQuiz({ serviceStatus: "volunteer" }),
+    );
+    expect(view.federalOneTimeTotal).toBeCloseTo(FRESH_AMOUNTS.baseLumpConservative, 5);
+    const ins = view.federalOneTimeLines.find((l) => l.id === "insurance");
+    expect(ins?.amountRub).toBe(0);
+    expect(view.freshMeta!.headlineMode).toBe("from");
+  });
+
+  it("дети: три строки ежемесячного блока включая итог", () => {
+    const view = buildPayoutBreakdownView(
+      completeNewFreshQuiz({ freshChildrenCount: "1" }),
+    );
+    expect(view.monthlyLines.some((l) => l.id === "child_allowance")).toBe(true);
+    expect(view.monthlyLines.some((l) => l.id === "child_pension")).toBe(true);
+    expect(view.monthlyLines.some((l) => l.id === "child_monthly_total")).toBe(true);
+  });
+
+  it("региональный disclaimer не дублируется в карточке (null)", () => {
+    const view = buildPayoutBreakdownView(
+      completeNewFreshQuiz({ calcMode: "federal_plus_region" }),
+    );
+    expect(view.regional.disclaimer).toBeNull();
+    expect(view.freshMeta?.regionalNote).toContain("Региональные выплаты");
   });
 });

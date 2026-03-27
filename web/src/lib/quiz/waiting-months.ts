@@ -23,6 +23,7 @@ export function getEstimatedWaitingMonths(answers: QuizAnswers): number | null {
       return 2;
     case "full_waiting":
     case "had_feedback":
+    case "unclear_submission":
       return 4;
     default:
       return null;

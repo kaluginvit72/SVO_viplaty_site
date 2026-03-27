@@ -58,7 +58,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
     }
     trackEvent("quiz_start", { flow_mode: mode });
     setState({
-      version: 4,
+      version: 5,
       flowMode: mode,
       stepIndex: 0,
       answers: {},
@@ -70,7 +70,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
     trackEvent("quiz_clarify_to_fresh", {});
     trackEvent("quiz_start", { flow_mode: "fresh" });
     setState((prev) => ({
-      version: 4,
+      version: 5,
       flowMode: "fresh",
       stepIndex: 0,
       answers: preserveClarifyAnswersForFreshFlow(prev.answers),

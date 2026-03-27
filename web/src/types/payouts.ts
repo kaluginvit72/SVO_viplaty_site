@@ -36,10 +36,31 @@ export type RegionalCatalogStatus =
   | "needs_verification"
   | "no_data";
 
+/** Данные для экрана результата при новом квизе выплат (без смены визуальных компонентов). */
+export interface FreshPayoutResultMeta {
+  headlinePrefix: string;
+  headlineAmountNumeric: number;
+  headlineMode: "none" | "up_to" | "from";
+  headlineAmountDisplay: string;
+  precisionLabel: string;
+  clarificationNote: string | null;
+  regionalNote: string | null;
+  radiationModuleNote: string;
+  personalShareRub: number | null;
+  monthlyChildrenTotal: number;
+  monthlyAllowancePart: number;
+  monthlyPensionPart: number;
+  shareRequiresClarification: boolean;
+  /** Префикс «до » для ежемесячного итога при needs_clarification */
+  monthlyPrefix: string;
+}
+
 export interface PayoutBreakdownView {
   federalOneTimeLines: FederalOneTimeLine[];
   federalOneTimeTotal: number;
   monthlyLines: MonthlyPayoutLine[];
+  /** Заполняется только для нового квиза расчёта выплат */
+  freshMeta?: FreshPayoutResultMeta;
   regional: {
     regionName: string | null;
     regionCode: string | null;

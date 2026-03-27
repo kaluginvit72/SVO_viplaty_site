@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { getRecipientsCount } from "@/lib/calculator";
+import { isFreshQuizComplete } from "@/lib/calculator/fresh-payout-calculator";
 import { isClarifyQuizComplete } from "@/lib/quiz/clarify-complete";
+import { isLegacyFreshQuizComplete } from "@/lib/quiz/fresh-quiz-complete";
 import type { QuizAnswers } from "@/types/quiz";
 
 /** Поля формы (клиент + сервер). */
@@ -155,15 +157,54 @@ const stuckMonthsSchema = z.union([
   z.literal(6),
 ]);
 
+const clarifyStage1Schema = z.enum([
+  "start",
+  "collecting_docs",
+  "ready_to_file",
+  "already_filed",
+  "post_filing_problem",
+]);
 const clarifyDeathCertSchema = z.enum(["yes", "in_progress", "no"]);
-const clarifyMilitarySchema = z.enum(["yes", "requested_waiting", "no"]);
+const clarifyMilitarySchema = z.enum([
+  "yes",
+  "requested_waiting",
+  "no",
+  "unsure",
+]);
 const clarifyKinshipSchema = z.enum(["complete", "partial", "none", "unsure"]);
-const clarifyCopiesSchema = z.enum(["ready", "collecting", "need_guidance"]);
+const clarifyCopiesSchema = z.enum([
+  "ready",
+  "collecting",
+  "missing_details",
+  "need_guidance",
+]);
 const clarifyFilingSchema = z.enum([
   "not_yet",
   "partial",
   "full_waiting",
   "had_feedback",
+  "unclear_submission",
+]);
+const clarifyPostFilingFeedbackSchema = z.enum([
+  "just_waiting",
+  "waiting_too_long",
+  "need_more_documents",
+  "refusal",
+  "partial_payment",
+  "response_unclear",
+]);
+const clarifyGoalPrimarySchema = z.enum([
+  "no_start",
+  "missing_docs",
+  "filing_order",
+  "after_filing",
+  "authority_response",
+]);
+const clarifyGoalSecondarySchema = z.enum([
+  "next_steps",
+  "check_package",
+  "find_blocker",
+  "full_overview",
 ]);
 const clarifyWhereSchema = z.enum([
   "not_yet",
@@ -180,6 +221,26 @@ const clarifyConsequenceSchema = z.enum([
   "after_authority_response",
   "full_overview",
 ]);
+
+const serviceStatusSchema = z.enum([
+  "contract_mobilized",
+  "volunteer",
+  "force_department",
+  "unknown",
+]);
+const freshApplicantRoleSchema = z.enum([
+  "spouse_registered",
+  "cohabitation_no_marriage",
+  "parent",
+  "child_under_18",
+  "child_student_18_23",
+  "representative_or_unknown",
+]);
+const freshRecipientsCountSchema = z.enum(["1", "2", "3", "4", "5_plus", "unknown"]);
+const freshChildrenCountSchema = z.enum(["0", "1", "2", "3_plus"]);
+const deathBasisSchema = z.enum(["duty", "disease", "unknown"]);
+const ambiguityFlagSchema = z.enum(["no", "yes", "unknown"]);
+const calcModeSchema = z.enum(["federal_only", "federal_plus_region", "unknown"]);
 
 /** Не strict — лишние поля из старого localStorage отбрасываются без 400. */
 export const quizAnswersApiSchema = z.object({
@@ -198,6 +259,7 @@ export const quizAnswersApiSchema = z.object({
   stuckSubmittedToList: z.array(stuckSubmittedToSchema).optional(),
   stuckResponseStatus: stuckResponseSchema.optional(),
   stuckMonthsWaiting: stuckMonthsSchema.optional(),
+  clarifyStage1: clarifyStage1Schema.optional(),
   clarifyDeathCert: clarifyDeathCertSchema.optional(),
   clarifyMilitaryNotice: clarifyMilitarySchema.optional(),
   clarifyKinshipDocs: clarifyKinshipSchema.optional(),
@@ -205,6 +267,16 @@ export const quizAnswersApiSchema = z.object({
   clarifyFilingStatus: clarifyFilingSchema.optional(),
   clarifyWhereSubmitted: clarifyWhereSchema.optional(),
   clarifyConsequenceFocus: clarifyConsequenceSchema.optional(),
+  clarifyPostFilingFeedback: clarifyPostFilingFeedbackSchema.optional(),
+  clarifyGoalPrimary: clarifyGoalPrimarySchema.optional(),
+  clarifyGoalSecondary: clarifyGoalSecondarySchema.optional(),
+  serviceStatus: serviceStatusSchema.optional(),
+  freshApplicantRole: freshApplicantRoleSchema.optional(),
+  freshRecipientsCount: freshRecipientsCountSchema.optional(),
+  freshChildrenCount: freshChildrenCountSchema.optional(),
+  deathBasis: deathBasisSchema.optional(),
+  ambiguityFlag: ambiguityFlagSchema.optional(),
+  calcMode: calcModeSchema.optional(),
 });
 
 export const quizPayloadSchema = z.object({
@@ -276,14 +348,24 @@ export const leadApiSchema = leadFormSchema
       return;
     }
 
-    const n = getRecipientsCount(answers);
-    if (!Number.isFinite(n) || n < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Некорректное число получателей в данных расчёта.",
-        path: ["quiz", "answers", "recipients"],
-      });
+    if (isFreshQuizComplete(answers) || isLegacyFreshQuizComplete(answers)) {
+      const n = getRecipientsCount(answers);
+      if (!Number.isFinite(n) || n < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Некорректное число получателей в данных расчёта.",
+          path: ["quiz", "answers", "recipients"],
+        });
+      }
+      return;
     }
+
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message:
+        "Данные предварительного расчёта неполные — обновите страницу и пройдите опрос до конца.",
+      path: ["quiz", "answers"],
+    });
   });
 
 export type LeadFormValues = z.input<typeof leadFormSchema>;

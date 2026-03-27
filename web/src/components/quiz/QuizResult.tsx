@@ -62,11 +62,17 @@ export function QuizResult({
 }: Props) {
   const recipientsCount = getRecipientsCount(answers);
   const view = buildPayoutBreakdownView(answers);
+  const fresh = view.freshMeta;
   const federalTotal = view.federalOneTimeTotal;
-  const personalShare = federalTotal / recipientsCount;
+  const personalShareNumeric =
+    fresh?.personalShareRub ?? federalTotal / recipientsCount;
+  const headlineNumeric = fresh?.headlineAmountNumeric ?? federalTotal;
   const accents = getPersonalAccents(answers);
-  const animatedTotal = useCountUp(federalTotal, 1200);
-  const animatedShare = useCountUp(personalShare, 1400);
+  const animatedTotal = useCountUp(headlineNumeric, 1200);
+  const animatedShare = useCountUp(
+    fresh?.shareRequiresClarification ? 0 : personalShareNumeric,
+    1400,
+  );
   const sumDisplay = new Intl.NumberFormat("ru-RU", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -77,7 +83,11 @@ export function QuizResult({
   }).format(animatedShare);
 
   const waitMonths = getEstimatedWaitingMonths(answers);
-  const delayRub = computeDelayLossRub(federalTotal, personalShare, waitMonths);
+  const delayRub = computeDelayLossRub(
+    federalTotal,
+    fresh?.shareRequiresClarification ? federalTotal / Math.max(1, recipientsCount) : personalShareNumeric,
+    waitMonths,
+  );
   const delayFamilyRub = delayRub?.delayFamilyRub ?? null;
   const delayShareRub = delayRub?.delayShareRub ?? null;
 
@@ -127,17 +137,42 @@ export function QuizResult({
 
             <div className="relative mt-10 text-center sm:text-left">
               <p className="text-xs font-medium text-[var(--text-secondary)] sm:text-sm">
-                {resultSectionCopy.sumLabelFederal}
+                {fresh?.headlinePrefix ?? resultSectionCopy.sumLabelFederal}
               </p>
               <p
                 className="mt-3 font-serif text-[clamp(2.25rem,7vw,4rem)] font-semibold leading-none tracking-tight text-[var(--deep-blue)]"
                 aria-live="polite"
               >
+                {fresh?.headlineMode === "up_to" ? (
+                  <span className="mr-1 align-baseline text-[0.42em] font-semibold text-[var(--deep-blue)]">
+                    до{" "}
+                  </span>
+                ) : null}
+                {fresh?.headlineMode === "from" ? (
+                  <span className="mr-1 align-baseline text-[0.42em] font-semibold text-[var(--deep-blue)]">
+                    от{" "}
+                  </span>
+                ) : null}
                 <span className="tabular-nums">{sumDisplay}</span>
                 <span className="ml-1 align-baseline text-[0.42em] font-semibold text-[var(--deep-blue)]">
                   ₽
                 </span>
               </p>
+              {fresh ? (
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm font-semibold text-[var(--deep-blue)]">{fresh.precisionLabel}</p>
+                  {fresh.clarificationNote ? (
+                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                      {fresh.clarificationNote}
+                    </p>
+                  ) : null}
+                  {fresh.regionalNote ? (
+                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                      {fresh.regionalNote}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
 
             <div className="relative mt-10 rounded-xl border border-[var(--cool-border)] bg-white p-5 sm:p-6">
@@ -151,10 +186,18 @@ export function QuizResult({
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)] md:text-[0.9375rem]">
                     {resultSectionCopy.shareBodyPrefix}{" "}
-                    <span className="font-semibold tabular-nums text-[var(--text-primary)]">
-                      {shareDisplay} ₽
-                    </span>{" "}
-                    {resultSectionCopy.shareBodySuffix} {recipientsCount}.
+                    {fresh?.shareRequiresClarification ? (
+                      <span className="font-semibold text-[var(--text-primary)]">
+                        требует уточнений
+                      </span>
+                    ) : (
+                      <span className="font-semibold tabular-nums text-[var(--text-primary)]">
+                        {shareDisplay} ₽
+                      </span>
+                    )}{" "}
+                    {fresh?.shareRequiresClarification && answers.freshRecipientsCount === "unknown"
+                      ? "Число претендентов в расчёте не задано."
+                      : `${resultSectionCopy.shareBodySuffix} ${recipientsCount}.`}
                   </p>
                 </div>
               </div>
@@ -234,6 +277,9 @@ export function QuizResult({
                           <p className="text-sm font-semibold text-[var(--text-primary)]">{line.title}</p>
                           {line.amountRub != null ? (
                             <p className="mt-1 font-serif text-base font-semibold tabular-nums text-[var(--text-primary)] sm:text-lg">
+                              {fresh && line.id === "child_monthly_total" && fresh.monthlyPrefix ? (
+                                <span className="inline font-semibold">{fresh.monthlyPrefix}</span>
+                              ) : null}
                               {formatRub(line.amountRub)}
                             </p>
                           ) : null}
