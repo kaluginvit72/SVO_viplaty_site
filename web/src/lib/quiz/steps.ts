@@ -1,10 +1,10 @@
 import type { ClarifyFilingStatus, FlowMode, QuizAnswers, QuizStepId } from "@/types/quiz";
 
 const FRESH_PAY_STEPS: QuizStepId[] = [
-  "service_status",
   "applicant_role",
-  "recipients_count",
   "children_count",
+  "recipients_count",
+  "service_status",
   "death_basis",
   "ambiguity_flag",
   "region",

@@ -4,10 +4,13 @@ import { motion } from "framer-motion";
 import { Calculator } from "lucide-react";
 import { QuizFlow } from "@/components/quiz/QuizFlow";
 import { quizSection } from "@/data/texts/landing";
+import { useQuiz } from "@/contexts/quiz-context";
 
 const stroke = 1.875;
 
 export function QuizSection() {
+  const { state, startFlow } = useQuiz();
+
   return (
     <section
       id="quiz-calculator"
@@ -53,6 +56,30 @@ export function QuizSection() {
           >
             {quizSection.subtitle}
           </motion.p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => startFlow("fresh")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                state.flowMode === "fresh"
+                  ? "bg-[#163A63] text-white"
+                  : "border border-[var(--cool-border)] bg-white text-[var(--deep-blue)]"
+              }`}
+            >
+              Квиз 1: Выплаты (родство/дети)
+            </button>
+            <button
+              type="button"
+              onClick={() => startFlow("clarify")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                state.flowMode === "clarify"
+                  ? "bg-[#163A63] text-white"
+                  : "border border-[var(--cool-border)] bg-white text-[var(--deep-blue)]"
+              }`}
+            >
+              Квиз 2: Прояснение ситуации
+            </button>
+          </div>
         </div>
         <motion.div
           initial={{ opacity: 0, y: 18 }}

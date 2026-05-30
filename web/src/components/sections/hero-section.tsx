@@ -89,14 +89,14 @@ export function HeroSection() {
 
             <motion.div variants={item} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
-                onClick={startFreshQuiz}
+                onClick={startClarifyQuiz}
                 className="inline-flex h-14 min-w-[240px] items-center justify-center gap-2 rounded-xl bg-[#D71920] px-7 text-base font-semibold text-white shadow-[0_8px_28px_-10px_rgba(215,25,32,0.6)] transition-all hover:bg-[#B9151C] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 sm:w-auto"
               >
                 Получить разбор ситуации
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </button>
               <button
-                onClick={startClarifyQuiz}
+                onClick={startFreshQuiz}
                 className="inline-flex h-14 min-w-[240px] items-center justify-center gap-2 rounded-xl border border-white/40 bg-transparent px-7 text-base font-semibold text-white transition-all hover:border-white/60 hover:bg-white/8 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 sm:w-auto"
               >
                 Предварительно проверить выплаты
