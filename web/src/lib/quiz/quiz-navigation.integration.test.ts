@@ -7,7 +7,7 @@ import type { QuizAnswers } from "@/types/quiz";
 describe("quiz navigation (integration)", () => {
   it("fresh: всегда 8 шагов", () => {
     expect(getVisibleSteps("fresh", {}).length).toBe(8);
-    expect(getVisibleSteps("fresh", {})[0]).toBe("service_status");
+    expect(getVisibleSteps("fresh", {})[0]).toBe("applicant_role");
     expect(getVisibleSteps("fresh", {})[7]).toBe("calc_mode");
   });
 
@@ -39,7 +39,7 @@ describe("quiz navigation (integration)", () => {
       region: "Москва",
     };
     const steps = getVisibleSteps("fresh", merged);
-    expect(steps[0]).toBe("service_status");
+    expect(steps[0]).toBe("applicant_role");
     expect(validateQuizStep("region", merged)).toBeNull();
   });
 });

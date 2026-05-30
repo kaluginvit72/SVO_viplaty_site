@@ -3,10 +3,10 @@ import { getVisibleSteps, isClarifyStep, isFreshPayStep, clampStepIndex } from "
 import type { QuizAnswers } from "@/types/quiz";
 
 const FRESH_EIGHT: string[] = [
-  "service_status",
   "applicant_role",
-  "recipients_count",
   "children_count",
+  "recipients_count",
+  "service_status",
   "death_basis",
   "ambiguity_flag",
   "region",
