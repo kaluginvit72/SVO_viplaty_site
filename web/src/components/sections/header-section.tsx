@@ -31,16 +31,16 @@ export function HeaderSection() {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="absolute left-10 top-[18px] block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          className="absolute left-10 top-1/2 block -translate-y-1/2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           aria-label="СВО Разбор — на главную"
         >
           <Image
             src="/images/logo-shit.png"
             alt="СВО Разбор. Юридическая помощь семьям погибших участников СВО"
-            width={184}
-            height={48}
+            width={276}
+            height={72}
             priority
-            className="h-auto w-[184px]"
+            className="h-auto w-[276px]"
           />
         </a>
 

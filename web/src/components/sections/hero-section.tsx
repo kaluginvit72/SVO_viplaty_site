@@ -40,10 +40,10 @@ export function HeroSection() {
             alt=""
             fill
             sizes="(min-width: 1024px) 48vw, 0px"
-            className="object-contain object-right-center"
+            className="object-contain object-right-center brightness-125 contrast-110 saturate-110"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#061426]/58 to-[#061426]/8" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#061426]/46 to-transparent" />
         </div>
 
         <div className="relative mx-auto box-border w-full max-w-[75rem] px-4 pb-16 pt-14 min-[360px]:px-5 lg:px-8 lg:pb-24 lg:pt-20">
