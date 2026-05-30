@@ -17,10 +17,10 @@ export default function HomePage() {
       <main id="main-content" className="w-full min-w-0">
         <QuizProvider>
           <HeroSection />
-          <ScenarioSection />
-          <QuizSectionDynamic />
           <PaymentsSection />
           <ReviewSection />
+          <ScenarioSection />
+          <QuizSectionDynamic />
           <SourcesSection />
           <WhySection />
           <FaqSection />
