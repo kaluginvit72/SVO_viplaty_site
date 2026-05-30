@@ -1,48 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Menu, X } from "lucide-react";
+import Image from "next/image";
+import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { label: "О сервисе", href: "#review" },
   { label: "Как это работает", href: "#why" },
   { label: "Выплаты", href: "#payments" },
-  { label: "Вопросы", href: "#faq" },
+  { label: "Отзывы", href: "#sources" },
+  { label: "FAQ", href: "#faq" },
   { label: "Контакты", href: "#contact-form" },
 ];
-
-function ShieldLogo() {
-  return (
-    <svg width="36" height="40" viewBox="0 0 36 40" fill="none" aria-hidden>
-      <path
-        d="M18 2L3 8v12c0 9.4 6.4 18.2 15 20.4C26.6 38.2 33 29.4 33 20V8L18 2z"
-        fill="#0E2744"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M18 2L3 8v12c0 9.4 6.4 18.2 15 20.4C26.6 38.2 33 29.4 33 20V8L18 2z"
-        fill="url(#shield-grad)"
-        fillOpacity="0.3"
-      />
-      <path
-        d="M12 20l4 4 8-8"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <rect x="3" y="37" width="30" height="2.5" rx="1.25" fill="#D71920" />
-      <defs>
-        <linearGradient id="shield-grad" x1="18" y1="2" x2="18" y2="40" gradientUnits="userSpaceOnUse">
-          <stop stopColor="white" stopOpacity="0.15" />
-          <stop offset="1" stopColor="white" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
 
 function scrollTo(href: string, closeFn?: () => void) {
   const id = href.replace("#", "");
@@ -54,65 +23,75 @@ export function HeaderSection() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#061426]/95 backdrop-blur">
-      <div className="mx-auto flex max-w-[75rem] items-center justify-between gap-4 px-4 py-3 min-[360px]:px-5 lg:px-8">
+    <header className="relative z-50 border-b border-[rgba(255,255,255,0.08)] bg-[#061426]">
+      <div className="mx-auto hidden h-[72px] w-full max-w-[75rem] lg:block">
         <a
           href="#"
           onClick={(e) => {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="flex shrink-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          className="absolute left-10 top-[18px] block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           aria-label="СВО Разбор — на главную"
         >
-          <ShieldLogo />
-          <div>
-            <p className="font-serif text-base font-bold leading-none tracking-tight text-white">
-              СВО Разбор
-            </p>
-            <p className="mt-0.5 hidden text-[10px] leading-tight text-white/60 sm:block">
-              Юридическая помощь семьям погибших участников СВО
-            </p>
-          </div>
+          <Image
+            src="/images/logo-shit.png"
+            alt="СВО Разбор. Юридическая помощь семьям погибших участников СВО"
+            width={184}
+            height={48}
+            priority
+            className="h-auto w-[184px]"
+          />
         </a>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Основная навигация">
+        <nav
+          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-7"
+          aria-label="Основная навигация"
+        >
           {navLinks.map((link) => (
             <button
               key={link.href}
               onClick={() => scrollTo(link.href)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-white/75 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+              className="text-[1.04rem] font-medium text-white/85 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
               {link.label}
             </button>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <a
-            href="mailto:iTrader7.5@yandex.ru"
-            className="hidden items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 md:flex"
-          >
-            <Mail className="h-4 w-4 text-white/70" strokeWidth={1.875} aria-hidden />
-            <span className="max-w-[220px] truncate">iTrader7.5@yandex.ru</span>
-          </a>
-
-          <button
-            onClick={() => scrollTo("#contact-form")}
-            className="hidden rounded-lg bg-[#D71920] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#B9151C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 sm:block md:hidden"
-          >
-            Связаться
-          </button>
-
-          <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 text-white/75 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Закрыть меню" : "Открыть меню"}
-            aria-expanded={open}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+        <div className="absolute right-10 top-[15px] text-right">
+          <p className="text-[1.1rem] font-semibold leading-tight text-white xl:text-[1.2rem]">8 800 301-45-67</p>
+          <p className="text-[0.78rem] text-white/70 xl:text-[0.82rem]">Пн–Пт 9:00–18:00 МСК</p>
         </div>
+      </div>
+
+      <div className="mx-auto flex h-[72px] w-full max-w-[75rem] items-center justify-between px-4 min-[360px]:px-5 lg:hidden">
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          aria-label="СВО Разбор — на главную"
+        >
+          <Image
+            src="/images/logo-shit.png"
+            alt="СВО Разбор. Юридическая помощь семьям погибших участников СВО"
+            width={174}
+            height={46}
+            className="h-auto w-[174px]"
+          />
+        </a>
+
+        <button
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 text-white/75 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Закрыть меню" : "Открыть меню"}
+          aria-expanded={open}
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
 
       {open ? (
@@ -128,18 +107,12 @@ export function HeaderSection() {
               </button>
             ))}
             <a
-              href="mailto:iTrader7.5@yandex.ru"
-              className="mt-2 flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white"
+              href="tel:88003014567"
+              className="mt-2 block rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white"
             >
-              <Mail className="h-4 w-4 text-white/70" strokeWidth={1.875} aria-hidden />
-              iTrader7.5@yandex.ru
+              8 800 301-45-67
+              <span className="mt-0.5 block text-xs text-white/65">Пн–Пт 9:00–18:00 МСК</span>
             </a>
-            <button
-              onClick={() => scrollTo("#contact-form", () => setOpen(false))}
-              className="rounded-lg bg-[#D71920] px-4 py-3 text-left text-sm font-semibold text-white"
-            >
-              Связаться
-            </button>
           </nav>
         </div>
       ) : null}

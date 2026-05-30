@@ -11,7 +11,10 @@ const sources = [
 
 export function SourcesSection() {
   return (
-    <section className="border-b border-[var(--cool-border)] bg-white px-4 py-14 min-[360px]:px-5 md:py-20 lg:px-8 lg:py-24">
+    <section
+      id="sources"
+      className="scroll-mt-20 border-b border-[var(--cool-border)] bg-white px-4 py-14 min-[360px]:px-5 md:py-20 lg:px-8 lg:py-24"
+    >
       <div className="mx-auto max-w-[75rem] rounded-2xl border border-[var(--cool-border)] bg-[var(--neutral-surface)] p-6 md:p-8">
         <h2 className="font-serif text-2xl font-semibold text-[var(--deep-blue)] md:text-3xl">
           Нормативные основания
