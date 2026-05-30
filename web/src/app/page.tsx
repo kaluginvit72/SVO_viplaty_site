@@ -10,6 +10,11 @@ import {
   SubmittedCasesIntentSection,
   WhereToApplyIntentSection,
 } from "@/components/sections/intent-guide-sections";
+import {
+  RoadmapSection,
+  ChecklistSection,
+  SourcesSection,
+} from "@/components/sections/roadmap-section";
 import { ScenarioSection } from "@/components/sections/scenario-section";
 import { QuizSectionDynamic } from "@/components/sections/quiz-section-dynamic";
 import { LeadFormSection } from "@/components/sections/lead-form-section";
@@ -44,6 +49,9 @@ export default function HomePage() {
           <IfNotPaidIntentSection />
           <SubmittedCasesIntentSection />
           <DocumentsIntentSection />
+          <RoadmapSection />
+          <ChecklistSection />
+          <SourcesSection />
           <ScenarioSection />
           <QuizSectionDynamic />
           <Suspense fallback={<LeadFormFallback />}>
