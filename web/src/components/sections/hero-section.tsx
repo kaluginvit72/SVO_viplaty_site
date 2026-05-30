@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, CheckCircle2, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import { hero } from "@/data/texts/landing";
 import { Button } from "@/components/ui/button";
 import { useQuiz } from "@/contexts/quiz-context";
@@ -28,10 +28,8 @@ const iconStroke = 1.875;
 export function HeroSection() {
   const { startFlow } = useQuiz();
 
-  const scrollQuiz = () => {
-    document.getElementById("quiz-calculator")?.scrollIntoView({
-      behavior: "smooth",
-    });
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -75,23 +73,6 @@ export function HeroSection() {
             {hero.subtitle}
           </motion.p>
 
-          <motion.ul
-            variants={item}
-            className="mx-auto mt-8 max-w-xl space-y-3 text-left lg:mx-0"
-            aria-label="Ключевые возможности"
-          >
-            {hero.bullets.map((b) => (
-              <li key={b} className="flex gap-3 text-[0.9375rem] leading-snug text-white/90 md:text-base">
-                <CheckCircle2
-                  className="mt-0.5 h-5 w-5 shrink-0 text-white/75"
-                  strokeWidth={iconStroke}
-                  aria-hidden
-                />
-                <span>{b}</span>
-              </li>
-            ))}
-          </motion.ul>
-
           <motion.div
             variants={item}
             className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start"
@@ -100,10 +81,7 @@ export function HeroSection() {
               variant="cta"
               size="lg"
               className="w-full sm:w-auto sm:min-w-[240px]"
-              onClick={() => {
-                startFlow("fresh");
-                scrollQuiz();
-              }}
+              onClick={() => scrollToSection("contact-form")}
             >
               {hero.ctaPrimary}
             </Button>
@@ -112,8 +90,8 @@ export function HeroSection() {
               variant="outline"
               className="w-full border-2 border-white/85 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white sm:w-auto sm:min-w-[220px]"
               onClick={() => {
-                startFlow("clarify");
-                scrollQuiz();
+                startFlow("fresh");
+                scrollToSection("quiz-calculator");
               }}
             >
               {hero.ctaDelay}
@@ -122,9 +100,9 @@ export function HeroSection() {
 
           <motion.p
             variants={item}
-            className="mx-auto mt-4 max-w-xl text-center text-sm leading-relaxed text-white/65 lg:mx-0 lg:text-left"
+            className="mx-auto mt-5 max-w-xl text-center text-[11px] leading-relaxed text-white/50 lg:mx-0 lg:text-left"
           >
-            {hero.ctaHint}
+            {hero.disclaimer}
           </motion.p>
 
           <motion.p
@@ -133,16 +111,6 @@ export function HeroSection() {
           >
             {hero.trustLine.join(" · ")}
           </motion.p>
-
-          <motion.button
-            variants={item}
-            type="button"
-            onClick={scrollQuiz}
-            className="mx-auto mt-8 flex items-center gap-2 rounded-lg text-sm font-medium text-white/90 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-navy)] lg:mx-0"
-          >
-            <ArrowDown className="h-4 w-4 motion-safe:animate-bounce" strokeWidth={iconStroke} aria-hidden />
-            {hero.scrollToQuiz}
-          </motion.button>
         </motion.div>
 
         <motion.div
@@ -155,25 +123,27 @@ export function HeroSection() {
             <p className="border-b border-[var(--light-blue-divider)] pb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
               {hero.summaryCardTitle}
             </p>
-            <ul className="mt-5 space-y-4">
-              {hero.summaryPayoutLines.map((line) => (
+            <p className="mt-5 font-serif font-semibold leading-none tracking-tight text-[var(--deep-blue)] text-[clamp(1.75rem,4vw,2.5rem)]">
+              {hero.summaryAmountBadge}
+            </p>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">
+              {hero.summaryAmountNote}
+            </p>
+            <ul className="mt-5 space-y-2.5">
+              {hero.summaryBreakdown.map((row) => (
                 <li
-                  key={line}
-                  className="flex gap-3 text-sm leading-snug text-[var(--text-primary)] md:text-[0.9375rem]"
+                  key={row.label}
+                  className="flex items-baseline justify-between gap-3 border-b border-[var(--light-blue-divider)] pb-2.5 last:border-0 last:pb-0"
                 >
-                  <span
-                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--deep-blue)]"
-                    aria-hidden
-                  />
-                  <span>{line}</span>
+                  <span className="text-sm text-[var(--text-secondary)]">{row.label}</span>
+                  <span className="shrink-0 font-mono text-sm font-semibold text-[var(--text-primary)]">
+                    {row.amount}
+                  </span>
                 </li>
               ))}
             </ul>
-            <p className="mt-6 border-t border-[var(--light-blue-divider)] pt-4 text-sm leading-relaxed text-[var(--text-secondary)]">
-              {hero.summaryRegionalNote}
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
-              {hero.summarySubmittedNote}
+            <p className="mt-4 text-[11px] leading-relaxed text-[var(--text-muted)]">
+              {hero.summaryDisclaimer}
             </p>
           </div>
         </motion.div>

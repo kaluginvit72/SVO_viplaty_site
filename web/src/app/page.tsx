@@ -1,39 +1,17 @@
-import { Suspense } from "react";
 import { QuizProvider } from "@/contexts/quiz-context";
 import { HeroSection } from "@/components/sections/hero-section";
 import { IntentNavSection } from "@/components/sections/intent-nav-section";
 import {
-  DocumentsIntentSection,
-  IfNotPaidIntentSection,
   PaymentsIntentSection,
   PayoutStructureIntentSection,
-  SubmittedCasesIntentSection,
-  WhereToApplyIntentSection,
 } from "@/components/sections/intent-guide-sections";
-import {
-  RoadmapSection,
-  ChecklistSection,
-  SourcesSection,
-} from "@/components/sections/roadmap-section";
-import { ScenarioSection } from "@/components/sections/scenario-section";
+import { SourcesSection } from "@/components/sections/roadmap-section";
+import { ReviewSection } from "@/components/sections/review-section";
 import { QuizSectionDynamic } from "@/components/sections/quiz-section-dynamic";
-import { LeadFormSection } from "@/components/sections/lead-form-section";
+import { ContactFormSection } from "@/components/sections/contact-form-section";
 import { FaqSection } from "@/components/sections/faq-section";
 import { FooterSection } from "@/components/sections/footer-section";
 import { HomeJsonLd } from "@/components/seo/home-json-ld";
-
-function LeadFormFallback() {
-  return (
-    <div
-      className="mx-auto max-w-lg px-4 py-14"
-      role="status"
-      aria-live="polite"
-      aria-label="Загрузка блока с формой"
-    >
-      <div className="h-96 animate-pulse rounded-2xl bg-muted/60" />
-    </div>
-  );
-}
 
 export default function HomePage() {
   return (
@@ -45,18 +23,10 @@ export default function HomePage() {
           <IntentNavSection />
           <PaymentsIntentSection />
           <PayoutStructureIntentSection />
-          <WhereToApplyIntentSection />
-          <IfNotPaidIntentSection />
-          <SubmittedCasesIntentSection />
-          <DocumentsIntentSection />
-          <RoadmapSection />
-          <ChecklistSection />
+          <ReviewSection />
           <SourcesSection />
-          <ScenarioSection />
           <QuizSectionDynamic />
-          <Suspense fallback={<LeadFormFallback />}>
-            <LeadFormSection />
-          </Suspense>
+          <ContactFormSection />
           <FaqSection />
           <FooterSection />
         </main>

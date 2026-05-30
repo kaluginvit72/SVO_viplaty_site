@@ -110,7 +110,7 @@ export function PayoutStructureIntentSection() {
           </h2>
           <p className="ds-body mt-4">{payoutStructureIntent.intro}</p>
         </motion.div>
-        <ol className="mt-10 space-y-5">
+        <ul className="mt-10 list-none space-y-5">
           {payoutStructureIntent.layers.map((layer, i) => (
             <motion.li
               key={layer.title}
@@ -137,7 +137,7 @@ export function PayoutStructureIntentSection() {
               </Card>
             </motion.li>
           ))}
-        </ol>
+        </ul>
       </div>
     </section>
   );

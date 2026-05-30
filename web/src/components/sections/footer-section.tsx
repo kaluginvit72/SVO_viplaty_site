@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
+import { Mail } from "lucide-react";
 import { legalDownloadHref } from "@/data/legal-documents";
 import {
   footerDisclaimer,
@@ -20,23 +20,12 @@ export function FooterSection() {
               <li>
                 <a
                   className="inline-flex items-center gap-2 font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--deep-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--main-bg)] rounded-md"
-                  href="tel:+70000000000"
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--cool-border)] bg-white text-[var(--deep-blue)] shadow-sm">
-                    <Phone className="h-4 w-4" strokeWidth={1.875} aria-hidden />
-                  </span>
-                  +7 (000) 000-00-00
-                </a>
-              </li>
-              <li>
-                <a
-                  className="inline-flex items-center gap-2 font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--deep-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--main-bg)] rounded-md"
-                  href="mailto:hello@example.com"
+                  href="mailto:iTrader7.5@yandex.ru"
                 >
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--cool-border)] bg-white text-[var(--deep-blue)] shadow-sm">
                     <Mail className="h-4 w-4" strokeWidth={1.875} aria-hidden />
                   </span>
-                  hello@example.com
+                  iTrader7.5@yandex.ru
                 </a>
               </li>
             </ul>
@@ -83,8 +72,7 @@ export function FooterSection() {
               Реквизиты
             </p>
             <p className="mt-4 max-w-xs text-xs leading-relaxed">
-              ИП Иванов Иван Иванович · ИНН 000000000000 · ОГРНИП
-              000000000000000 — замените на ваши данные.
+              Калугин Виталий Анатольевич (физическое лицо)
             </p>
           </div>
         </div>
