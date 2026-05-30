@@ -1,4 +1,5 @@
 # Лендинг svorazbor.ru — выплаты семье погибшего участника СВО
+<!-- deploy test 2026-05-30 -->
 
 **Release candidate** для production: **Next.js 15 (App Router)**, **TypeScript**, **Tailwind CSS v4**, UI в духе **shadcn/ui** (Radix + CVA), **Framer Motion**, **React Hook Form** + **Zod**.
 
