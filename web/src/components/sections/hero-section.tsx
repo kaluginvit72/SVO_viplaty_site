@@ -31,16 +31,20 @@ export function HeroSection() {
           <span />
         </div>
 
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[47%] lg:block" aria-hidden>
+        <div
+          className="pointer-events-none absolute bottom-0 right-0 top-20 hidden w-[39vw] min-w-[20rem] max-w-[26rem] lg:block xl:top-24 xl:max-w-[27rem]"
+          aria-hidden
+        >
           <Image
             src="/images/hero-memorial.png"
             alt=""
             fill
-            className="object-cover object-right"
+            sizes="(min-width: 1280px) 41vw, (min-width: 1024px) 43vw, 0px"
+            className="object-contain object-right-bottom"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#061426]/70 to-[#061426]/10" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#061426]/20 via-[#0B1D33]/60 to-[#061426]/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#061426]/68 to-[#061426]/12" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#061426]/10 via-[#0B1D33]/42 to-[#061426]/72" />
         </div>
 
         <div className="relative mx-auto box-border w-full max-w-[75rem] px-4 pb-16 pt-14 min-[360px]:px-5 lg:px-8 lg:pb-24 lg:pt-20">
