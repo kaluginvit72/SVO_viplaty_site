@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Landmark, ShieldCheck, Star } from "lucide-react";
 import { paymentsSection } from "@/data/texts/landing";
 
-const stripColors = ["#D71920", "#163a63", "#0E2744"] as const;
+const cardIcons = [Star, Landmark, ShieldCheck];
 
 export function PaymentsSection() {
   return (
@@ -21,10 +22,9 @@ export function PaymentsSection() {
           className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
-            <p className="ds-section-kicker">{paymentsSection.kicker}</p>
             <h2
               id="payments-title"
-              className="ds-h2 mt-2 text-[var(--deep-blue)]"
+              className="ds-h2 text-[var(--deep-blue)]"
             >
               {paymentsSection.title}
             </h2>
@@ -39,29 +39,30 @@ export function PaymentsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-20px" }}
           transition={{ delay: 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 grid gap-5 sm:grid-cols-3"
+          className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
         >
           {paymentsSection.cards.map((card, i) => (
             <div
               key={card.title}
-              className="relative overflow-hidden rounded-2xl border border-[var(--cool-border)] bg-white shadow-[var(--shadow-spec-card)] transition-shadow hover:shadow-[0_14px_36px_rgba(11,31,58,0.12)]"
+              className="relative overflow-hidden rounded-2xl border border-[var(--cool-border)] bg-white p-6 shadow-[var(--shadow-spec-card)] transition-shadow hover:shadow-[0_14px_36px_rgba(11,31,58,0.12)] md:p-7"
             >
-              {/* Top color strip */}
-              <div
-                className="h-1 w-full"
-                style={{ background: stripColors[i] }}
-              />
-              <div className="p-6 md:p-7">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--icon-red-bg)] text-[#D71920]">
+                  {(() => {
+                    const Icon = cardIcons[i];
+                    return <Icon className="h-5 w-5" strokeWidth={1.9} aria-hidden />;
+                  })()}
+                </span>
                 <p className="font-serif text-[clamp(1.75rem,4vw,2.25rem)] font-bold leading-none tracking-tight text-[var(--primary-navy)]">
                   {card.amount}
                 </p>
-                <p className="mt-3 text-base font-semibold text-[var(--text-primary)]">
-                  {card.title}
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
-                  {card.description}
-                </p>
               </div>
+              <p className="mt-4 text-base font-semibold text-[var(--text-primary)]">
+                {card.title}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+                {card.description}
+              </p>
             </div>
           ))}
         </motion.div>

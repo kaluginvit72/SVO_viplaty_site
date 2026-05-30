@@ -8,7 +8,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { whySection, leadForm } from "@/data/texts/landing";
-import { legalDownloadHref } from "@/data/legal-documents";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
@@ -19,6 +18,8 @@ const schema = z.object({
   relation: z.string().max(80).optional(),
   stage: z.string().max(120).optional(),
   message: z.string().max(1500).optional(),
+  website: z.string().max(0).optional(),
+  formStartedAt: z.string().optional(),
   consent: z.literal(true, {
     errorMap: () => ({ message: "Необходимо согласие" }),
   }),
@@ -50,6 +51,8 @@ export function WhySection() {
       relation: "",
       stage: "",
       message: "",
+      website: "",
+      formStartedAt: String(Date.now()),
       consent: undefined as unknown as true,
     },
   });
@@ -125,7 +128,7 @@ export function WhySection() {
                 </div>
               ) : (
                 <>
-                  <p className="font-serif text-xl font-bold text-white">{whySection.formTitle}</p>
+                  <p className="font-serif text-[1.75rem] font-bold leading-tight text-white">{whySection.formTitle}</p>
                   <p className="mt-1.5 text-sm text-white/60">{whySection.formSubtitle}</p>
 
                   <form
@@ -181,6 +184,9 @@ export function WhySection() {
                         {...register("region")}
                       />
                     </div>
+
+                    <input type="text" tabIndex={-1} autoComplete="off" className="hidden" {...register("website")} />
+                    <input type="hidden" {...register("formStartedAt")} />
 
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-1.5">
@@ -248,18 +254,15 @@ export function WhySection() {
                         />
                         <div className="min-w-0 flex-1">
                           <label htmlFor="wf-consent" className="block cursor-pointer text-xs leading-relaxed text-white/65">
-                            Я согласен(на) на обработку персональных данных и ознакомлен(а) с{" "}
+                            Я согласен(а) на{" "}
+                            <Link href="/consent" className="text-white/85 underline underline-offset-2 hover:text-white">
+                              обработку персональных данных
+                            </Link>
+                            {" "}и ознакомлен(а) с{" "}
                             <Link href="/privacy" className="text-white/85 underline underline-offset-2 hover:text-white">
                               Политикой конфиденциальности
                             </Link>
-                            {" "}
-                            <a href={legalDownloadHref.privacy} download className="text-white/45 text-[10px] hover:text-white/70">скачать</a>
-                            {" · "}
-                            <Link href="/consent" className="text-white/85 underline underline-offset-2 hover:text-white">
-                              Текст согласия
-                            </Link>
-                            {" "}
-                            <a href={legalDownloadHref.consent} download className="text-white/45 text-[10px] hover:text-white/70">скачать</a>
+                            .
                           </label>
                         </div>
                       </div>
@@ -288,6 +291,14 @@ export function WhySection() {
 
                     <p className="text-center text-[11px] text-white/40">
                       Ваши данные используются только для связи и предварительного разбора обращения.
+                    </p>
+                    <p className="text-center text-[11px] text-white/45">
+                      Первичное обращение бесплатно. Условия платного разбора согласуются отдельно.
+                    </p>
+                    <p className="text-center text-[11px] text-white/45">
+                      <Link href="/terms-consultation" className="underline underline-offset-2 hover:text-white/80">
+                        Условия консультации и разбора ситуации
+                      </Link>
                     </p>
                   </form>
                 </>

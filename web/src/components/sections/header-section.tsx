@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Menu, X } from "lucide-react";
+import { Mail, Menu, X } from "lucide-react";
 
 const navLinks = [
   { label: "О сервисе", href: "#review" },
   { label: "Как это работает", href: "#why" },
   { label: "Выплаты", href: "#payments" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Вопросы", href: "#faq" },
   { label: "Контакты", href: "#contact-form" },
 ];
 
@@ -54,27 +54,28 @@ export function HeaderSection() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#061426]">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#061426]/95 backdrop-blur">
       <div className="mx-auto flex max-w-[75rem] items-center justify-between gap-4 px-4 py-3 min-[360px]:px-5 lg:px-8">
-        {/* Logo */}
         <a
           href="#"
-          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-          className="flex shrink-0 items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 rounded-lg"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="flex shrink-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           aria-label="СВО Разбор — на главную"
         >
           <ShieldLogo />
           <div>
-            <p className="font-serif text-base font-bold leading-none text-white tracking-tight">
+            <p className="font-serif text-base font-bold leading-none tracking-tight text-white">
               СВО Разбор
             </p>
-            <p className="mt-0.5 text-[10px] leading-tight text-white/55 hidden sm:block">
-              Юридическая помощь семьям погибших
+            <p className="mt-0.5 hidden text-[10px] leading-tight text-white/60 sm:block">
+              Юридическая помощь семьям погибших участников СВО
             </p>
           </div>
         </a>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Основная навигация">
           {navLinks.map((link) => (
             <button
@@ -87,15 +88,21 @@ export function HeaderSection() {
           ))}
         </nav>
 
-        {/* Phone + mobile toggle */}
         <div className="flex items-center gap-3">
           <a
-            href="tel:88003014567"
-            className="hidden items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 xl:flex"
+            href="mailto:iTrader7.5@yandex.ru"
+            className="hidden items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 md:flex"
           >
-            <Phone className="h-4 w-4 text-white/70" strokeWidth={1.875} aria-hidden />
-            <span>8 800 301-45-67</span>
+            <Mail className="h-4 w-4 text-white/70" strokeWidth={1.875} aria-hidden />
+            <span className="max-w-[220px] truncate">iTrader7.5@yandex.ru</span>
           </a>
+
+          <button
+            onClick={() => scrollTo("#contact-form")}
+            className="hidden rounded-lg bg-[#D71920] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#B9151C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 sm:block md:hidden"
+          >
+            Связаться
+          </button>
 
           <button
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 text-white/75 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:hidden"
@@ -108,8 +115,7 @@ export function HeaderSection() {
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {open && (
+      {open ? (
         <div className="border-t border-white/10 bg-[#061426] px-4 pb-4 pt-2 min-[360px]:px-5 lg:hidden">
           <nav className="flex flex-col gap-1" aria-label="Мобильная навигация">
             {navLinks.map((link) => (
@@ -122,16 +128,21 @@ export function HeaderSection() {
               </button>
             ))}
             <a
-              href="tel:88003014567"
+              href="mailto:iTrader7.5@yandex.ru"
               className="mt-2 flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white"
             >
-              <Phone className="h-4 w-4 text-white/70" strokeWidth={1.875} aria-hidden />
-              8 800 301-45-67
-              <span className="ml-auto text-xs text-white/50">Пн–Пт 9:00–18:00 МСК</span>
+              <Mail className="h-4 w-4 text-white/70" strokeWidth={1.875} aria-hidden />
+              iTrader7.5@yandex.ru
             </a>
+            <button
+              onClick={() => scrollTo("#contact-form", () => setOpen(false))}
+              className="rounded-lg bg-[#D71920] px-4 py-3 text-left text-sm font-semibold text-white"
+            >
+              Связаться
+            </button>
           </nav>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }

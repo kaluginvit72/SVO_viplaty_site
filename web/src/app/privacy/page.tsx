@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { legalDocuments, legalDownloadHref } from "@/data/legal-documents";
-import { leadForm } from "@/data/texts/landing";
 import { privacyPageDescription, siteMetadata } from "@/data/seo/site-metadata";
 
 const pageTitle = "Политика конфиденциальности";
-const { h1, paragraphs } = legalDocuments.privacy;
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -30,29 +27,98 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
-      <Link
-        href="/"
-        className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-      >
+      <Link href="/" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
         ← На главную
       </Link>
-      <h1 className="mt-8 font-serif text-3xl font-semibold text-foreground">
-        {h1}
-      </h1>
-      <div className="prose prose-neutral mt-8 max-w-none space-y-4 text-sm leading-relaxed text-muted-foreground">
-        {paragraphs.map((text, i) => (
-          <p key={i}>{text}</p>
-        ))}
+      <h1 className="mt-8 font-serif text-3xl font-semibold text-foreground">Политика конфиденциальности</h1>
+
+      <div className="prose prose-neutral mt-8 max-w-none text-sm leading-relaxed text-muted-foreground">
+        <p>
+          Настоящая Политика конфиденциальности разработана в соответствии с требованиями Федерального закона от
+          27.07.2006 № 152-ФЗ «О персональных данных» и определяет порядок обработки персональных данных при
+          использовании сайта svorazbor.ru.
+        </p>
+
+        <h2>1. Оператор</h2>
+        <p>
+          Калугин Виталий Анатольевич
+          <br />
+          Email: iTrader7.5@yandex.ru
+        </p>
+
+        <h2>2. Какие данные могут обрабатываться</h2>
+        <ul>
+          <li>имя;</li>
+          <li>телефон;</li>
+          <li>Telegram;</li>
+          <li>email (если указан);</li>
+          <li>регион;</li>
+          <li>родство / статус заявителя;</li>
+          <li>этап ситуации;</li>
+          <li>текст сообщения;</li>
+          <li>технические данные: IP, user-agent, cookies, данные аналитики (если применимо).</li>
+        </ul>
+
+        <h2>3. Цели обработки</h2>
+        <ul>
+          <li>связь с пользователем;</li>
+          <li>предварительная оценка обращения;</li>
+          <li>организация консультации или разбора ситуации;</li>
+          <li>ведение переписки;</li>
+          <li>улучшение работы сайта (если используется аналитика);</li>
+          <li>выполнение требований закона (если применимо).</li>
+        </ul>
+
+        <h2>4. Использование Telegram</h2>
+        <p>
+          Для оперативного получения заявок Оператор может использовать закрытый Telegram-чат, закрытую группу или
+          закрытый канал, доступный только Оператору или лицам, привлеченным к обработке обращения. В Telegram
+          передаются только данные, указанные пользователем в форме заявки. Пользователю не следует направлять через
+          форму паспортные данные, СНИЛС, банковские реквизиты, сканы документов и иные сведения, не требующиеся для
+          первичного контакта.
+        </p>
+
+        <h2>5. Хостинг и технические сервисы</h2>
+        <p>
+          Сайт размещается на инфраструктуре хостинг-провайдера. Техническая обработка данных может осуществляться с
+          использованием сервисов, обеспечивающих работу сайта, формы заявки, почты, Telegram-уведомлений и средств
+          защиты от спама.
+        </p>
+
+        <h2>6. Cookies и аналитика</h2>
+        <p>
+          На сайте могут использоваться cookies и технические средства аналитики для обеспечения работы сайта, анализа
+          посещаемости и улучшения интерфейса. Пользователь может ограничить использование cookies в настройках
+          браузера.
+        </p>
+
+        <h2>7. Срок хранения</h2>
+        <p>
+          Персональные данные хранятся не дольше, чем это необходимо для целей обработки: для заявок — до завершения
+          коммуникации и не более 12 месяцев с даты последнего обращения, если более длительный срок не требуется по
+          закону или договорным отношениям. Пользователь вправе отозвать согласие раньше.
+        </p>
+
+        <h2>8. Права субъекта персональных данных</h2>
+        <p>
+          Пользователь вправе запросить сведения об обработке своих персональных данных, потребовать уточнения,
+          блокирования или удаления данных, а также отозвать согласие на обработку, направив обращение на email
+          Оператора.
+        </p>
+
+        <h2>9. Уничтожение данных</h2>
+        <p>
+          После достижения целей обработки или получения отзыва согласия данные удаляются или обезличиваются в
+          разумный срок, если отсутствуют законные основания для их дальнейшего хранения.
+        </p>
+
+        <h2>10. Локализация</h2>
+        <p>
+          При сборе персональных данных граждан Российской Федерации Оператор принимает меры по обеспечению соблюдения
+          требований законодательства РФ о персональных данных, включая требования о локализации баз данных, когда
+          они применимы.
+        </p>
       </div>
-      <p className="mt-10 text-sm">
-        <a
-          href={legalDownloadHref.privacy}
-          download
-          className="font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-        >
-          {leadForm.legalPageDownloadCta}
-        </a>
-      </p>
     </div>
   );
 }
