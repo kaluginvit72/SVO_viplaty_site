@@ -66,7 +66,7 @@ export function QuizSection() {
                   : "border border-[var(--cool-border)] bg-white text-[var(--deep-blue)]"
               }`}
             >
-              Квиз 1: Выплаты (родство/дети)
+              Выплаты (родство/дети)
             </button>
             <button
               type="button"
@@ -77,7 +77,7 @@ export function QuizSection() {
                   : "border border-[var(--cool-border)] bg-white text-[var(--deep-blue)]"
               }`}
             >
-              Квиз 2: Прояснение ситуации
+              Прояснение ситуации
             </button>
           </div>
         </div>

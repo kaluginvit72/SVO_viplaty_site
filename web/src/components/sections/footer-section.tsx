@@ -69,25 +69,25 @@ export function FooterSection() {
             <ul className="mt-4 space-y-3">
               <li>
                 <a
-                  href="tel:88003014567"
+                  href="tel:+79935021061"
                   className="inline-flex items-center gap-2.5 text-sm font-medium text-white/80 transition-colors hover:text-white"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/8">
                     <PhoneCall className="h-3.5 w-3.5" strokeWidth={1.875} aria-hidden />
                   </span>
-                  8 800 301-45-67
+                  8 (993) 502-10-61
                 </a>
-                <p className="ml-10 mt-1 text-xs text-white/55">Пн–Пт 9:00–18:00 МСК</p>
+                <p className="ml-10 mt-1 text-xs text-white/55">ПНД–СБ 7:00–20:00 МСК</p>
               </li>
               <li>
                 <a
-                  href="mailto:info@svorazbor.ru"
+                  href="mailto:iTrader7.5@yandex.ru"
                   className="inline-flex items-center gap-2.5 text-sm font-medium text-white/80 transition-colors hover:text-white"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/8">
                     <Mail className="h-3.5 w-3.5" strokeWidth={1.875} aria-hidden />
                   </span>
-                  info@svorazbor.ru
+                  iTrader7.5@yandex.ru
                 </a>
               </li>
             </ul>

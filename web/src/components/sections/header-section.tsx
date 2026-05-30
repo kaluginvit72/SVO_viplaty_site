@@ -60,8 +60,8 @@ export function HeaderSection() {
         </nav>
 
         <div className="absolute right-10 top-[15px] text-right">
-          <p className="text-[1.1rem] font-semibold leading-tight text-white xl:text-[1.2rem]">8 800 301-45-67</p>
-          <p className="text-[0.78rem] text-white/70 xl:text-[0.82rem]">Пн–Пт 9:00–18:00 МСК</p>
+          <p className="text-[1.1rem] font-semibold leading-tight text-white xl:text-[1.2rem]">8 (993) 502-10-61</p>
+          <p className="text-[0.78rem] text-white/70 xl:text-[0.82rem]">ПНД–СБ 7:00–20:00 МСК</p>
         </div>
       </div>
 
@@ -107,11 +107,11 @@ export function HeaderSection() {
               </button>
             ))}
             <a
-              href="tel:88003014567"
+              href="tel:+79935021061"
               className="mt-2 block rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white"
             >
-              8 800 301-45-67
-              <span className="mt-0.5 block text-xs text-white/65">Пн–Пт 9:00–18:00 МСК</span>
+              8 (993) 502-10-61
+              <span className="mt-0.5 block text-xs text-white/65">ПНД–СБ 7:00–20:00 МСК</span>
             </a>
           </nav>
         </div>
