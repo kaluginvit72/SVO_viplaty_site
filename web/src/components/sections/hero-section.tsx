@@ -1,153 +1,172 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shield } from "lucide-react";
-import { hero } from "@/data/texts/landing";
+import { ArrowRight, Info, ShieldCheck, Globe, CheckSquare2, Heart } from "lucide-react";
+import { hero, trustBar } from "@/data/texts/landing";
 import { Button } from "@/components/ui/button";
-import { useQuiz } from "@/contexts/quiz-context";
 
 const container = {
   hidden: { opacity: 1 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
-  },
+  show: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring" as const, stiffness: 380, damping: 32 },
-  },
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 360, damping: 34 } },
 };
 
-const iconStroke = 1.875;
+const trustIcons = [ShieldCheck, Globe, CheckSquare2, Heart];
+
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
 
 export function HeroSection() {
-  const { startFlow } = useQuiz();
-
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <section
-      className="ds-hero-spec relative overflow-hidden border-b border-[color-mix(in_srgb,white_12%,transparent)]"
-      aria-labelledby="hero-title"
-    >
-      <div className="ds-hero-spec-lines" aria-hidden>
-        <span />
-        <span />
-        <span />
-      </div>
+    <>
+      <section
+        className="ds-hero-spec relative overflow-hidden"
+        aria-labelledby="hero-title"
+      >
+        <div className="ds-hero-spec-lines" aria-hidden>
+          <span />
+          <span />
+          <span />
+        </div>
 
-      <div className="relative mx-auto box-border w-full max-w-6xl px-4 pb-14 pt-12 min-[360px]:px-5 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:items-center lg:gap-16 lg:px-8 lg:pb-28 lg:pt-20">
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="text-center lg:text-left"
+        {/* Decorative right panel */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[46%] lg:block"
+          aria-hidden
         >
-          <motion.p
-            variants={item}
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/85 backdrop-blur-sm min-[360px]:text-xs"
+          <div className="absolute inset-0 bg-gradient-to-r from-[#061426] via-[#061426]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0E2744]/80 via-[#0b1f3a]/50 to-[#061426]/90" />
+          {/* Shield silhouette */}
+          <svg
+            className="absolute right-8 top-1/2 -translate-y-1/2 opacity-[0.07]"
+            width="320"
+            height="380"
+            viewBox="0 0 320 380"
+            fill="none"
           >
-            <Shield className="h-3.5 w-3.5 text-white/90" strokeWidth={iconStroke} aria-hidden />
-            {hero.eyebrow}
-          </motion.p>
+            <path
+              d="M160 10L20 60v120c0 90 60 172 140 195C240 352 300 270 300 180V60L160 10z"
+              fill="white"
+            />
+          </svg>
+          {/* Decorative dots */}
+          <svg className="absolute bottom-12 right-12 opacity-[0.12]" width="120" height="120" viewBox="0 0 120 120">
+            {Array.from({ length: 6 }).map((_, row) =>
+              Array.from({ length: 6 }).map((_, col) => (
+                <circle
+                  key={`${row}-${col}`}
+                  cx={col * 20 + 10}
+                  cy={row * 20 + 10}
+                  r="2"
+                  fill="white"
+                />
+              ))
+            )}
+          </svg>
+          {/* Red accent line */}
+          <div className="absolute left-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-[#D71920]/30 to-transparent" />
+        </div>
 
-          <motion.h1
-            id="hero-title"
-            variants={item}
-            className="mt-6 text-balance font-serif font-semibold leading-[1.1] tracking-tight text-white text-[clamp(2.125rem,5.5vw,3.75rem)]"
-          >
-            {hero.title}
-          </motion.h1>
-
-          <motion.p
-            variants={item}
-            className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-white/80 md:text-lg lg:mx-0 lg:max-w-[38rem]"
-          >
-            {hero.subtitle}
-          </motion.p>
-
+        <div className="relative mx-auto box-border w-full max-w-[75rem] px-4 pb-16 pt-14 min-[360px]:px-5 lg:px-8 lg:pb-24 lg:pt-20">
           <motion.div
-            variants={item}
-            className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start"
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="max-w-[600px]"
           >
-            <Button
-              variant="cta"
-              size="lg"
-              className="w-full sm:w-auto sm:min-w-[240px]"
-              onClick={() => scrollToSection("contact-form")}
+            <motion.p
+              variants={item}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.07] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/75 backdrop-blur-sm"
             >
-              {hero.ctaPrimary}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full border-2 border-white/85 bg-transparent text-white shadow-none hover:bg-white/10 hover:text-white sm:w-auto sm:min-w-[220px]"
-              onClick={() => {
-                startFlow("fresh");
-                scrollToSection("quiz-calculator");
-              }}
+              Консультационный сервис
+            </motion.p>
+
+            <motion.h1
+              id="hero-title"
+              variants={item}
+              className="mt-5 font-serif font-bold leading-[1.08] tracking-tight text-white text-[clamp(2rem,5vw,3.25rem)]"
             >
-              {hero.ctaDelay}
-            </Button>
+              {hero.title}
+            </motion.h1>
+
+            <motion.p
+              variants={item}
+              className="mt-4 text-base leading-relaxed text-white/70 md:text-lg"
+            >
+              {hero.subtitle}
+            </motion.p>
+
+            {/* Amount */}
+            <motion.div variants={item} className="mt-7">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
+                Ориентир по трём федеральным выплатам
+              </p>
+              <p className="mt-2 font-serif font-bold leading-none tracking-tight text-white text-[clamp(2.5rem,7vw,4.5rem)]">
+                {hero.summaryAmountBadge}
+              </p>
+              <div className="mt-3 flex items-start gap-2 text-white/55">
+                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.875} aria-hidden />
+                <p className="text-xs leading-relaxed">
+                  Итоговый размер выплат зависит от документов, состава семьи и официальных решений.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CTAs */}
+            <motion.div
+              variants={item}
+              className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+            >
+              <button
+                onClick={() => scrollTo("contact-form")}
+                className="inline-flex h-14 min-w-[220px] items-center justify-center gap-2 rounded-xl bg-[#D71920] px-7 text-base font-semibold text-white shadow-[0_8px_28px_-10px_rgba(215,25,32,0.6)] transition-all hover:bg-[#b91520] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 sm:w-auto"
+              >
+                {hero.ctaPrimary}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </button>
+              <button
+                onClick={() => scrollTo("payments")}
+                className="inline-flex h-14 min-w-[220px] items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-transparent px-7 text-base font-semibold text-white transition-all hover:border-white/50 hover:bg-white/8 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 sm:w-auto"
+              >
+                {hero.ctaDelay}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </button>
+            </motion.div>
+
+            <motion.p
+              variants={item}
+              className="mt-5 text-[11px] leading-relaxed text-white/40"
+            >
+              {hero.disclaimer}
+            </motion.p>
           </motion.div>
+        </div>
+      </section>
 
-          <motion.p
-            variants={item}
-            className="mx-auto mt-5 max-w-xl text-center text-[11px] leading-relaxed text-white/50 lg:mx-0 lg:text-left"
-          >
-            {hero.disclaimer}
-          </motion.p>
-
-          <motion.p
-            variants={item}
-            className="mx-auto mt-3 text-center text-xs font-medium text-white/55 lg:mx-0 lg:text-left"
-          >
-            {hero.trustLine.join(" · ")}
-          </motion.p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 300, damping: 28 }}
-          className="mt-14 lg:mt-0"
-        >
-          <div className="ds-spec-card ds-spec-card-hover mx-auto max-w-md lg:max-w-none">
-            <p className="border-b border-[var(--light-blue-divider)] pb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]">
-              {hero.summaryCardTitle}
-            </p>
-            <p className="mt-5 font-serif font-semibold leading-none tracking-tight text-[var(--deep-blue)] text-[clamp(1.75rem,4vw,2.5rem)]">
-              {hero.summaryAmountBadge}
-            </p>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">
-              {hero.summaryAmountNote}
-            </p>
-            <ul className="mt-5 space-y-2.5">
-              {hero.summaryBreakdown.map((row) => (
+      {/* Trust bar */}
+      <div className="border-b border-white/10 bg-[#0b1f3a]">
+        <div className="mx-auto max-w-[75rem] px-4 min-[360px]:px-5 lg:px-8">
+          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 py-4 sm:justify-between sm:py-5">
+            {trustBar.map((item, i) => {
+              const Icon = trustIcons[i];
+              return (
                 <li
-                  key={row.label}
-                  className="flex items-baseline justify-between gap-3 border-b border-[var(--light-blue-divider)] pb-2.5 last:border-0 last:pb-0"
+                  key={item.label}
+                  className="flex items-center gap-2 text-xs font-medium text-white/65 sm:text-sm"
                 >
-                  <span className="text-sm text-[var(--text-secondary)]">{row.label}</span>
-                  <span className="shrink-0 font-mono text-sm font-semibold text-[var(--text-primary)]">
-                    {row.amount}
-                  </span>
+                  <Icon className="h-4 w-4 shrink-0 text-white/50" strokeWidth={1.75} aria-hidden />
+                  {item.label}
                 </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-[11px] leading-relaxed text-[var(--text-muted)]">
-              {hero.summaryDisclaimer}
-            </p>
-          </div>
-        </motion.div>
+              );
+            })}
+          </ul>
+        </div>
       </div>
-    </section>
+    </>
   );
 }

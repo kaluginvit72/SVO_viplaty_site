@@ -1,84 +1,143 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { legalDownloadHref } from "@/data/legal-documents";
-import {
-  footerDisclaimer,
-  footerLegalNote,
-  leadForm,
-} from "@/data/texts/landing";
+
+function ShieldLogoSmall() {
+  return (
+    <svg width="28" height="32" viewBox="0 0 36 40" fill="none" aria-hidden>
+      <path
+        d="M18 2L3 8v12c0 9.4 6.4 18.2 15 20.4C26.6 38.2 33 29.4 33 20V8L18 2z"
+        fill="#0E2744"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M12 20l4 4 8-8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="3" y="37" width="30" height="2.5" rx="1.25" fill="#D71920" />
+    </svg>
+  );
+}
+
+const linkClass =
+  "text-white/55 text-sm transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-sm";
 
 export function FooterSection() {
   return (
-    <footer className="border-t border-[var(--cool-border)] bg-[color-mix(in_srgb,var(--primary-navy)_5%,var(--main-bg))] px-4 py-14 text-sm text-[var(--text-secondary)] min-[360px]:px-5 lg:px-8">
-      <div className="mx-auto max-w-6xl space-y-10">
-        <div className="grid gap-10 md:grid-cols-3 lg:gap-12">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground/85">
-              Контакты
+    <footer
+      className="border-t border-white/10 px-4 py-14 min-[360px]:px-5 lg:px-8 lg:py-16"
+      style={{ background: "#061426" }}
+    >
+      <div className="mx-auto max-w-[75rem]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+
+          {/* Col 1: Brand */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-3">
+              <ShieldLogoSmall />
+              <p className="font-serif text-base font-bold text-white">СВО Разбор</p>
+            </div>
+            <p className="mt-3 max-w-[200px] text-sm leading-relaxed text-white/50">
+              Юридическая помощь семьям погибших участников СВО
             </p>
-            <ul className="mt-4 space-y-3">
-              <li>
-                <a
-                  className="inline-flex items-center gap-2 font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--deep-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--main-bg)] rounded-md"
-                  href="mailto:iTrader7.5@yandex.ru"
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--cool-border)] bg-white text-[var(--deep-blue)] shadow-sm">
-                    <Mail className="h-4 w-4" strokeWidth={1.875} aria-hidden />
-                  </span>
-                  iTrader7.5@yandex.ru
-                </a>
-              </li>
+            <p className="mt-4 text-xs text-white/30">
+              © СВО Разбор, 2024–2025
+            </p>
+          </div>
+
+          {/* Col 2: About */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
+              О сервисе
+            </p>
+            <ul className="mt-4 space-y-2.5">
+              {[
+                { label: "Как это работает", href: "#why" },
+                { label: "Выплаты", href: "#payments" },
+                { label: "Что проверяется", href: "#review" },
+                { label: "FAQ", href: "#faq" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <a href={link.href} className={linkClass}>{link.label}</a>
+                </li>
+              ))}
             </ul>
           </div>
+
+          {/* Col 3: Legal */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-primary)]">
-              Документы
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
+              Правовая информация
             </p>
-            <ul className="mt-4 space-y-2">
-              <li className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <Link
-                  href="/privacy"
-                  className="text-[var(--text-primary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
-                >
+            <ul className="mt-4 space-y-2.5">
+              <li className="flex flex-wrap items-baseline gap-x-2">
+                <Link href="/privacy" className={linkClass}>
                   Политика конфиденциальности
                 </Link>
                 <a
                   href={legalDownloadHref.privacy}
                   download
-                  className="text-xs text-[var(--text-secondary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                  className="text-xs text-white/30 hover:text-white/60 transition-colors"
                 >
-                  {leadForm.legalDownloadShort}
+                  скачать
                 </a>
               </li>
-              <li className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <Link
-                  href="/consent"
-                  className="text-[var(--text-primary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
-                >
+              <li className="flex flex-wrap items-baseline gap-x-2">
+                <Link href="/consent" className={linkClass}>
                   Согласие на обработку данных
                 </Link>
                 <a
                   href={legalDownloadHref.consent}
                   download
-                  className="text-xs text-[var(--text-secondary)] underline-offset-4 transition-colors hover:text-[var(--deep-blue)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--deep-blue)_30%,transparent)] focus-visible:ring-offset-2 rounded-sm"
+                  className="text-xs text-white/30 hover:text-white/60 transition-colors"
                 >
-                  {leadForm.legalDownloadShort}
+                  скачать
                 </a>
               </li>
             </ul>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-primary)]">
-              Реквизиты
-            </p>
-            <p className="mt-4 max-w-xs text-xs leading-relaxed">
+            <p className="mt-6 text-xs leading-relaxed text-white/30">
               Калугин Виталий Анатольевич (физическое лицо)
             </p>
           </div>
+
+          {/* Col 4: Contacts */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
+              Контакты
+            </p>
+            <ul className="mt-4 space-y-3">
+              <li>
+                <a
+                  href="tel:88003014567"
+                  className="inline-flex items-center gap-2.5 text-sm font-medium text-white/75 transition-colors hover:text-white"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/8">
+                    <Phone className="h-3.5 w-3.5" strokeWidth={1.875} aria-hidden />
+                  </span>
+                  8 800 301-45-67
+                </a>
+                <p className="ml-10 mt-0.5 text-[11px] text-white/35">Пн–Пт 9:00–18:00 МСК</p>
+              </li>
+              <li>
+                <a
+                  href="mailto:iTrader7.5@yandex.ru"
+                  className="inline-flex items-center gap-2.5 text-sm font-medium text-white/75 transition-colors hover:text-white"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/8">
+                    <Mail className="h-3.5 w-3.5" strokeWidth={1.875} aria-hidden />
+                  </span>
+                  iTrader7.5@yandex.ru
+                </a>
+              </li>
+            </ul>
+            <p className="mt-4 text-xs text-white/35">Мы на связи по всей России</p>
+          </div>
         </div>
-        <div className="space-y-3 border-t border-[var(--cool-border)] pt-8 text-xs leading-relaxed text-[var(--text-secondary)]">
-          <p>{footerDisclaimer}</p>
-          <p>{footerLegalNote}</p>
+
+        {/* Bottom disclaimer */}
+        <div className="mt-10 border-t border-white/10 pt-8">
+          <p className="text-xs leading-relaxed text-white/30">
+            Сайт не является государственным ресурсом и не оказывает государственных услуг. Информация носит справочный характер и не заменяет очную консультацию.
+          </p>
         </div>
       </div>
     </footer>

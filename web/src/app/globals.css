@@ -10,10 +10,12 @@ html {
   Палитра зафиксирована; без teal/SaaS-акцентов.
 */
 :root {
-  --primary-navy: #0b1f3a;
+  --primary-navy: #061426;
   --deep-blue: #163a63;
-  --accent-red: #b3262e;
-  --cool-border: #d9e2ec;
+  --accent-red: #D71920;
+  --cool-border: #E2E8F0;
+  --icon-red-bg: #FDE8EA;
+  --icon-navy: #132C4A;
   --main-bg: #f5f7fa;
   --card-bg: #ffffff;
   --text-primary: #111827;
@@ -164,7 +166,7 @@ body {
 .ds-hero-spec {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #0b1f3a 0%, #163a63 100%);
+  background: linear-gradient(135deg, #061426 0%, #0E2744 60%, #0b1f3a 100%);
   border-color: color-mix(in srgb, var(--deep-blue) 35%, transparent);
 }
 

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Onest, PT_Serif } from "next/font/google";
 import { GoogleAnalyticsApp } from "@/components/analytics/google-analytics-app";
 import { YandexMetrika } from "@/components/analytics/yandex-metrika";
+import { HeaderSection } from "@/components/sections/header-section";
 import { siteMetadata } from "@/data/seo/site-metadata";
 import { runtimeGaMeasurementId, runtimeYmCounterId } from "@/lib/runtime-analytics-env";
 import { resolveSiteUrl } from "@/lib/site-url";
@@ -108,6 +109,7 @@ export default function RootLayout({
         >
           К основному содержимому
         </a>
+        <HeaderSection />
         {children}
       </body>
     </html>
