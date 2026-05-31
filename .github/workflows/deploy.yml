@@ -129,6 +129,8 @@ jobs:
               "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/docker-compose.yml"
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             docker compose pull
+            # Если контейнер был запущен из другого compose-проекта — убираем конфликт имени
+            docker rm -f svo-site 2>/dev/null || true
             docker compose up -d --remove-orphans
             docker image prune -f
 
