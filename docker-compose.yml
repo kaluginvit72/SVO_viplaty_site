@@ -17,6 +17,13 @@ services:
       - "traefik.http.routers.svorazbor-websecure.tls=true"
       - "traefik.http.routers.svorazbor-websecure.tls.certresolver=letsencrypt"
       - "traefik.http.services.svorazbor.loadbalancer.server.port=3000"
+      - "traefik.http.services.svorazbor.loadbalancer.healthcheck.path=/api/health"
+      - "traefik.http.services.svorazbor.loadbalancer.healthcheck.interval=30s"
+      - "traefik.http.services.svorazbor.loadbalancer.healthcheck.timeout=10s"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
     networks:
       - dokploy-network
     volumes:
