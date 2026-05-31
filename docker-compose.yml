@@ -9,13 +9,15 @@ services:
       - "127.0.0.1:3001:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.svorazbor.rule=Host(`svorazbor.ru`)"
-      - "traefik.http.routers.svorazbor.entrypoints=websecure"
-      - "traefik.http.routers.svorazbor.tls=true"
-      - "traefik.http.routers.svorazbor.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.svorazbor-web.rule=Host(`svorazbor.ru`) || Host(`www.svorazbor.ru`)"
+      - "traefik.http.routers.svorazbor-web.entrypoints=web"
+      - "traefik.http.routers.svorazbor-web.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.svorazbor-websecure.rule=Host(`svorazbor.ru`) || Host(`www.svorazbor.ru`)"
+      - "traefik.http.routers.svorazbor-websecure.entrypoints=websecure"
+      - "traefik.http.routers.svorazbor-websecure.tls=true"
+      - "traefik.http.routers.svorazbor-websecure.tls.certresolver=letsencrypt"
       - "traefik.http.services.svorazbor.loadbalancer.server.port=3000"
     networks:
-      - default
       - dokploy-network
     volumes:
       - ./data:/app/data
