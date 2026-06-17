@@ -12,12 +12,18 @@ export function HomeJsonLd() {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": ["Organization", "ProfessionalService"],
         "@id": `${base}/#organization`,
         name: "СВО Разбор",
         url: base,
         description: siteMetadata.defaultDescription,
         inLanguage: "ru-RU",
+        areaServed: {
+          "@type": "Country",
+          name: "Россия",
+        },
+        serviceType: "Консультации по выплатам семьям погибших участников СВО",
+        // sameAs: ["https://yandex.ru/maps/org/..."] — добавить после регистрации в Яндекс Бизнес
         contactPoint: [
           {
             "@type": "ContactPoint",
