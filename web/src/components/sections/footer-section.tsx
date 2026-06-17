@@ -77,7 +77,20 @@ export function FooterSection() {
                   </span>
                   8 (993) 502-10-61
                 </a>
-                <p className="ml-10 mt-1 text-xs text-white/55">ПНД–СБ 7:00–20:00 МСК</p>
+                <p className="ml-10 mt-0.5 text-xs font-medium text-white/70">Виталий</p>
+                <p className="ml-10 mt-0.5 text-xs text-white/55">ПНД–СБ 7:00–20:00 МСК</p>
+              </li>
+              <li>
+                <a
+                  href="tel:+79221026331"
+                  className="inline-flex items-center gap-2.5 text-sm font-medium text-white/80 transition-colors hover:text-white"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/8">
+                    <PhoneCall className="h-3.5 w-3.5" strokeWidth={1.875} aria-hidden />
+                  </span>
+                  8 (922) 102-63-31
+                </a>
+                <p className="ml-10 mt-0.5 text-xs font-medium text-white/70">Владислав</p>
               </li>
               <li>
                 <a

@@ -59,9 +59,10 @@ export function HeaderSection() {
           ))}
         </nav>
 
-        <div className="absolute right-10 top-[15px] text-right">
-          <p className="text-[1.1rem] font-semibold leading-tight text-white xl:text-[1.2rem]">8 (993) 502-10-61</p>
-          <p className="text-[0.78rem] text-white/70 xl:text-[0.82rem]">ПНД–СБ 7:00–20:00 МСК</p>
+        <div className="absolute right-10 top-1/2 -translate-y-1/2 text-right">
+          <p className="text-[1rem] font-semibold leading-tight text-white xl:text-[1.1rem]">8 (993) 502-10-61</p>
+          <p className="mt-0.5 text-[0.875rem] font-semibold leading-tight text-white/90 xl:text-[0.95rem]">8 (922) 102-63-31</p>
+          <p className="mt-1 text-[0.75rem] text-white/70 xl:text-[0.78rem]">ПНД–СБ 7:00–20:00 МСК</p>
         </div>
       </div>
 
@@ -112,6 +113,12 @@ export function HeaderSection() {
             >
               8 (993) 502-10-61
               <span className="mt-0.5 block text-xs text-white/65">ПНД–СБ 7:00–20:00 МСК</span>
+            </a>
+            <a
+              href="tel:+79221026331"
+              className="mt-2 block rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white"
+            >
+              8 (922) 102-63-31
             </a>
           </nav>
         </div>

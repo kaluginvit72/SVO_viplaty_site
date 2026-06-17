@@ -1,15 +1,28 @@
 import type { MetadataRoute } from "next";
 import { resolveSiteUrl } from "@/lib/site-url";
 
+export const dynamic = "force-dynamic";
+
 export default function robots(): MetadataRoute.Robots {
   const base = resolveSiteUrl();
 
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/thanks", "/api/"],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/thanks", "/api/"],
+      },
+      {
+        userAgent: "YandexBot",
+        allow: "/",
+        disallow: ["/thanks", "/api/"],
+      },
+      {
+        userAgent: "YandexImages",
+        allow: "/",
+      },
+    ],
     sitemap: `${base}/sitemap.xml`,
   };
 }

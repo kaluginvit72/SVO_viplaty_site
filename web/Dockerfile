@@ -13,7 +13,7 @@ RUN npm ci
 FROM base AS builder
 ENV NEXT_TELEMETRY_DISABLED=1
 # Next.js подставляет NEXT_PUBLIC_* при сборке — задайте build-args в CI или .env рядом с контекстом web/
-ARG NEXT_PUBLIC_SITE_URL=
+ARG NEXT_PUBLIC_SITE_URL=https://svorazbor.ru
 ARG NEXT_PUBLIC_GA_ID=
 ARG NEXT_PUBLIC_YM_ID=
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL

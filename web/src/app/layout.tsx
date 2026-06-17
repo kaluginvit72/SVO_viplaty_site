@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Onest, PT_Serif } from "next/font/google";
-import { GoogleAnalyticsApp } from "@/components/analytics/google-analytics-app";
+import { CookieBanner } from "@/components/analytics/cookie-banner";
+// GA4 временно отключён (см. комментарий ниже) — импорт сохранён для быстрого возврата
+// import { GoogleAnalyticsApp } from "@/components/analytics/google-analytics-app";
 import { YandexMetrika } from "@/components/analytics/yandex-metrika";
 import { HeaderSection } from "@/components/sections/header-section";
 import { siteMetadata } from "@/data/seo/site-metadata";
-import { runtimeGaMeasurementId, runtimeYmCounterId } from "@/lib/runtime-analytics-env";
+import { runtimeYmCounterId } from "@/lib/runtime-analytics-env";
 import { resolveSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -70,6 +72,9 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
+  verification: {
+    google: "jxvFiJhE0mUBMhhuXGrlgTOHMGNjmZIT__aqsNR8a7o",
+  },
 };
 
 export const viewport: Viewport = {
@@ -87,7 +92,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const ymId = runtimeYmCounterId();
-  const gaId = runtimeGaMeasurementId();
 
   return (
     <html lang="ru">
@@ -101,7 +105,8 @@ export default function RootLayout({
             }}
           />
         ) : null}
-        {gaId ? <GoogleAnalyticsApp gaId={gaId} /> : null}
+        {/* GA4 временно отключён — раскомментить когда будет уведомление в РКН о трансграничной передаче */}
+        {/* {gaId ? <GoogleAnalyticsApp gaId={gaId} /> : null} */}
         {ymId ? <YandexMetrika counterId={ymId} /> : null}
         <a
           href="#main-content"
@@ -111,6 +116,7 @@ export default function RootLayout({
         </a>
         <HeaderSection />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );
